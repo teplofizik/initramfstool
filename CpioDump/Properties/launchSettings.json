@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CpioDump": {
+      "commandName": "Project",
+      "commandLineArgs": "cpio=C:\\Users\\Professional\\Documents\\antminer\\cpio\\sd\\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio root=./root/ out=Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio"
+    }
+  }
+}

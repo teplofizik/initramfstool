@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace CpioLib.Types
@@ -33,12 +34,13 @@ namespace CpioLib.Types
             return null;
         }
 
-        public void UpdateFile(string Filename, byte[] Raw)
+        public void UpdateFile(string Filename, string LocalPath)
         {
             var F = GetFile(Filename);
 
             if(F != null)
             {
+                var Raw = File.ReadAllBytes(LocalPath);
                 var NF = F.UpdateContent(Raw);
 
                 for(int i = 0; i < Files.Count; i++)

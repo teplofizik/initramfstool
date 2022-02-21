@@ -14,14 +14,17 @@ namespace CpioLib.Types
         public CpioFile UpdateContent(byte[] Data)
         {
             var NewDataSize = HeaderWithPathSize + Data.Length;
-            var NewRawSize = NewDataSize.MakeSizeAligned(4);
+            var NewRawSize = NewDataSize.GetAligned(4);
 
             var NewRaw = new byte[NewRawSize];
             var Header = ReadArray(0, HeaderWithPathSize);
             Array.Copy(Header, NewRaw, HeaderWithPathSize);
             Array.Copy(Data, 0, NewRaw, HeaderWithPathSize, Data.Length);
 
-            return new CpioFile(NewRaw);
+            var File = new CpioFile(NewRaw);
+            File.FileSize = Convert.ToUInt32(Data.Length);
+
+            return File;
         }
 
         public bool IsCorrectMagic => Magic == "070701";
@@ -30,6 +33,13 @@ namespace CpioLib.Types
         {
             var Text = ReadString(HeaderOffset, Size);
             return Convert.ToUInt32(Text, 16);
+        }
+
+        private void SetAsciiValue(long HeaderOffset, int Size, UInt32 value)
+        {
+            var Text = $"{value:X08}";
+            var Array = UTF8Encoding.UTF8.GetBytes(Text);
+            WriteArray(HeaderOffset, Array, Size);
         }
 
         /// <summary>
@@ -48,7 +58,11 @@ namespace CpioLib.Types
         /// <summary>
         /// must be 0 for FIFOs and directories
         /// </summary>
-        public UInt32 FileSize => GetAsciiValue(54, 8);
+        public UInt32 FileSize
+        {
+            get { return GetAsciiValue(54, 8); }
+            set { SetAsciiValue(54, 8, value); }
+        }
 
 
         public UInt32 Major => GetAsciiValue(62, 8);

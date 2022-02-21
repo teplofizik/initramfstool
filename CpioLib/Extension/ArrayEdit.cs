@@ -19,6 +19,11 @@ namespace Extension.Array
             }
             return 0;
         }
+        public static long GetAligned(this long Size, long Align)
+        {
+            return Size + Size.MakeSizeAligned(Align);
+        }
+
         static public void Fill<T>(this T[] Data, T Value)
         {
             if (Data == null) return;

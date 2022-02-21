@@ -8,19 +8,24 @@ namespace CpioDump
     {
         static void Main(string[] args)
         {
-            // SD LOADER: C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
-            // 
-            var Packed = CpioParser.Load(@"C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.packed.cpio");
-            var Original = CpioParser.Load(@"C:\Users\Professional\Documents\antminer\encruption\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio");
+            var Args = new ArgParser(args);
 
-            foreach(var F in Original.Files)
+            var Cpio = Args.GetArg("cpio");
+            var Root = Args.GetArg("root");
+            var Out = Args.GetArg("out");
+
+
+            if ((Cpio != null) && (Root != null))
             {
-                if(!Packed.Exists(F.Path))
-                {
-                    Console.WriteLine($"{F.Path} not found");
-                }
+                // SD LOADER: C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
+                //var Packed = CpioParser.Load(@"C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.packed.cpio");
+                var Original = CpioParser.Load(Cpio);
+
+                CpioUpdater.UpdateArchive(ref Original, Root);
+
+                if (Out != null)
+                    CpioPacker.Save(Original, Out);
             }
-            //Dumper.Dump();
         }
     }
 }
