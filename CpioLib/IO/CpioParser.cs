@@ -10,13 +10,13 @@ namespace CpioLib.IO
 {
     public static class CpioParser
     {
-        public static CpioArchive Load(string Filename)
+
+        public static CpioArchive Load(byte[] Data)
         {
             var Res = new CpioArchive();
-            var Data = File.ReadAllBytes(Filename);
 
             long Offset = 0;
-            while(Offset < Data.Length)
+            while (Offset < Data.Length)
             {
                 var FI = new CpioFileInfo(Data, Offset);
 
@@ -37,6 +37,8 @@ namespace CpioLib.IO
 
             return Res;
         }
+
+        public static CpioArchive Load(string Filename) => Load(File.ReadAllBytes(Filename));
 
     }
 }

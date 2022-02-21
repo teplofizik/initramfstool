@@ -11,6 +11,11 @@ namespace CpioLib.IO
     {
         public static void Save(CpioArchive Archive, string FileName)
         {
+            File.WriteAllBytes(FileName, GetRawData(Archive));
+        }
+
+        public static byte[] GetRawData(CpioArchive Archive)
+        {
             var Res = new List<byte>();
 
             foreach (var F in Archive.Files)
@@ -18,8 +23,7 @@ namespace CpioLib.IO
 
             var Padding = Convert.ToInt64(Res.Count).MakeSizeAligned(0x100);
             for (long i = 0; i < Padding; i++) Res.Add(0);
-
-            File.WriteAllBytes(FileName, Res.ToArray());
+            return Res.ToArray();
         }
     }
 }

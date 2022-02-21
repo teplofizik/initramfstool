@@ -1,6 +1,8 @@
 ﻿using CpioDump.Dumper;
 using System;
 using CpioLib.IO;
+using RamFsLib.Types;
+using System.IO;
 
 namespace CpioDump
 {
@@ -10,6 +12,11 @@ namespace CpioDump
         {
             var Args = new ArgParser(args);
 
+            ModifyInitramfs(Args);
+        }
+
+        static void ModifyCpio(ArgParser Args)
+        {
             var Cpio = Args.GetArg("cpio");
             var Root = Args.GetArg("root");
             var Out = Args.GetArg("out");
@@ -25,6 +32,30 @@ namespace CpioDump
 
                 if (Out != null)
                     CpioPacker.Save(Original, Out);
+            }
+        }
+        static void ModifyInitramfs(ArgParser Args)
+        {
+            var RamFsFile = Args.GetArg("ramfs");
+            var Root = Args.GetArg("root");
+            var Out = Args.GetArg("out");
+
+            if (RamFsFile != null)
+            {
+                var Fs = new InitramFsFile(RamFsFile);
+
+                var CpioRaw = Fs.UnpackedData;
+                var Original = CpioParser.Load(CpioRaw);
+
+                CpioUpdater.UpdateArchive(ref Original, Root);
+
+                if (Out != null)
+                {
+                    var UnpackedDst = CpioPacker.GetRawData(Original);
+
+                    var NewFs = Fs.GetModified(UnpackedDst);
+                    File.WriteAllBytes(Out, NewFs.getPacket());
+                }
             }
         }
     }
