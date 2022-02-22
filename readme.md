@@ -3,7 +3,7 @@ Tool for fast modifying initramfs images (fix web, configs etc) from Windows wit
 
 ## List files
 ```
-CpioDump.exe ramfs=./example/initramfs.bin.SD
+InitramfsTool.exe ramfs=./example/initramfs.bin.SD
 ```
 will produce such output:
 ```
@@ -17,13 +17,13 @@ usr/bin/microcom: m:a1ff in:398716 links:1 maj:8 min:1 rmaj:0 rmin:0
 ```
 ## Extract files
 ```
-CpioDump.exe ramfs=./example/initramfs.bin.SD extract=./extracted/
+InitramfsTool.exe ramfs=./example/initramfs.bin.SD extract=./extracted/
 ```
 All directories and regular files will be extracted (for content editing).
 
 ## Modify content
 ```
-CpioDump.exe ramfs=./example/initramfs.bin.SD root=./root/ commands=./commands.txt out=./initramfs.bin.SD
+InitramfsTool.exe ramfs=./example/initramfs.bin.SD root=./root/ commands=./commands.txt out=./initramfs.bin.SD
 ```
 Arguments: 
 | Argument | Description | Example value |
@@ -59,7 +59,7 @@ Pipeline: load image => unpack cpio => process cpio data => modify content => ad
 # CPIO editing
 ## List files
 ```
-CpioDump.exe cpio=./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
+InitramfsTool.exe cpio=./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
 ```
 will produce such output:
 ```
@@ -74,13 +74,13 @@ usr/bin/microcom: m:a1ff in:398716 links:1 maj:8 min:1 rmaj:0 rmin:0
 
 ## Extract files
 ```
-CpioDump.exe cpio=./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio extract=./extracted/
+InitramfsTool.exe cpio=./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio extract=./extracted/
 ```
 All directories and regular files will be extracted (for content editing).
 
 ## Modify content
 ```
-CpioDump.exe cpio=./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio root=./root/ commands=./commands.txt out=./Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
+InitramfsTool.exe cpio=./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio root=./root/ commands=./commands.txt out=./Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
 ```
 Arguments: 
 | Argument | Description | Example value |
