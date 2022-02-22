@@ -21,6 +21,11 @@ namespace CpioLib.IO
             foreach (var F in Archive.Files)
                 Res.AddRange(F.getPacket());
 
+            if (Archive.Trailer != null)
+            {
+                Res.AddRange(Archive.Trailer.getPacket());
+            }
+
             var Padding = Convert.ToInt64(Res.Count).MakeSizeAligned(0x100);
             for (long i = 0; i < Padding; i++) Res.Add(0);
             return Res.ToArray();

@@ -7,6 +7,7 @@ namespace CpioLib.Types
 {
     public class CpioArchive
     {
+        public CpioFile Trailer = null;
         public List<CpioFile> Files = new List<CpioFile>();
 
         public CpioArchive()
@@ -32,6 +33,21 @@ namespace CpioLib.Types
                     return F;
             }
             return null;
+        }
+
+        public void Delete(string Filename)
+        {
+            Files.RemoveAll(F => (F.Path == Filename));
+        }
+
+        public void AddDir(string Filename, string LocalPath)
+        {
+            Files.Add(new CpioFile(Filename, LocalPath, true));
+        }
+
+        public void AddFile(string Filename, string LocalPath)
+        {
+            Files.Add(new CpioFile(Filename, LocalPath, false));
         }
 
         public void UpdateFile(string Filename, string LocalPath)

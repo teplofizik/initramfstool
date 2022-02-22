@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using Extension.Array;
@@ -9,7 +10,45 @@ namespace CpioLib.Types
 {
     public class CpioFile : RawPacket
     {
+        public static UInt32 MaxNodeId = 0;
+
         public CpioFile(byte[] Raw) : base(Raw) { }
+
+        private static long CalcPacketSize(string Path, string LocalPath, bool Dir)
+        {
+            var HeaderSize = 110;
+            var PathSize = Path.Length + 1;
+            var DataSize = Dir ? 0 : File.ReadAllBytes(LocalPath).Length;
+            var HeaderWithPathAlighedSize = Convert.ToInt64(HeaderSize + PathSize).GetAligned(4);
+            return (HeaderWithPathAlighedSize + DataSize).GetAligned(4);
+        }
+
+        public CpioFile(string Path, string LocalPath, bool Dir) : base(CalcPacketSize(Path, LocalPath, Dir))
+        {
+            var PathBytes = UTF8Encoding.UTF8.GetBytes(Path); 
+            var Data = Dir ? new byte[] { } : File.ReadAllBytes(LocalPath);
+
+            var ModTime = Dir ? new DirectoryInfo(LocalPath).LastWriteTime : new FileInfo(LocalPath).LastWriteTime;
+
+            MaxNodeId++;
+
+            WriteArray(0, UTF8Encoding.UTF8.GetBytes("070701"), 6); // Header
+            SetAsciiValue(6, 8, MaxNodeId); // INode []
+            SetAsciiValue(14, 8, Dir ? 0x41edU : 0x81a4U); // Mode  [0x41ed dir, 0x81a4 file]
+
+            SetAsciiValue(22, 8, 0); // UserId
+            SetAsciiValue(30, 8, 0); // GroupId
+            SetAsciiValue(38, 8, 1); // NumLink ???
+            SetAsciiValue(46, 8, GetUnixTimestamp(ModTime)); // ModificationTime
+            SetAsciiValue(54, 8, Convert.ToUInt32(Data.Length)); // FileSize
+            SetAsciiValue(62, 8, 8); // Major
+            SetAsciiValue(70, 8, 1); // Minor
+            SetAsciiValue(78, 8, 0); // RMajor
+            SetAsciiValue(86, 8, 0); // RMinor
+            SetAsciiValue(94, 8, Convert.ToUInt32(PathBytes.Length + 1)); // NameSize
+            WriteArray(110, PathBytes, PathBytes.Length);
+            WriteArray(HeaderWithPathSize, Data, Data.Length);
+        }
 
         public CpioFile UpdateContent(byte[] Data)
         {
@@ -26,6 +65,8 @@ namespace CpioLib.Types
 
             return File;
         }
+
+        public byte[] Content => ReadArray(HeaderWithPathSize, FileSize);
 
         public bool IsCorrectMagic => Magic == "070701";
 
@@ -88,9 +129,9 @@ namespace CpioLib.Types
         /// </summary>
         public UInt32 Check => GetAsciiValue(102, 8);
 
-        public CpioModeFlags Flags => (CpioModeFlags)(Mode & 07777u);
+        public CpioModeFlags Flags => (CpioModeFlags)(Mode & 0xFFF);
 
-        public CpioModeFileType FileType => (CpioModeFileType)(Mode & 0770000u);
+        public CpioModeFileType FileType => (CpioModeFileType)(Mode & 0x3F000);
 
         public bool IsTrailer => Path == "TRAILER!!!";
 
@@ -107,5 +148,7 @@ namespace CpioLib.Types
         {
             return $"CPIO: {Path} (sz: {FileSize}, u: {UserId}, g: {GroupId}, m: {Mode})";
         }
+
+        protected UInt32 GetUnixTimestamp(DateTime T) => Convert.ToUInt32(((DateTimeOffset)T).ToUnixTimeSeconds());
     }
 }

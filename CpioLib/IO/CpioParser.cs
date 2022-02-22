@@ -25,11 +25,22 @@ namespace CpioLib.IO
                     var Raw = Data.ReadArray(Offset, FI.FullFileBlockSize);
                     var F = new CpioFile(Raw);
 
-                    Res.Files.Add(F);
+                    if(F.INode > CpioFile.MaxNodeId)
+                    {
+                        CpioFile.MaxNodeId = F.INode;
+                    }
 
-                    Offset += FI.FullFileBlockSize;
-                    if (FI.IsTrailer)
+                    if (!FI.IsTrailer)
+                    {
+                        Res.Files.Add(F);
+
+                        Offset += FI.FullFileBlockSize;
+                    }
+                    else
+                    {
+                        Res.Trailer = F;
                         break;
+                    }
                 }
                 else
                     break;
