@@ -12,7 +12,15 @@ namespace CpioDump
         {
             var Args = new ArgParser(args);
 
-            ModifyInitramfs(Args);
+            var Cpio = Args.GetArg("cpio");
+            if (Cpio != null)
+                ModifyCpio(Args);
+            else
+            {
+                var RamFsFile = Args.GetArg("ramfs");
+                if (RamFsFile != null)
+                    ModifyInitramfs(Args);
+            }
         }
 
         static void ModifyCpio(ArgParser Args)
@@ -20,7 +28,6 @@ namespace CpioDump
             var Cpio = Args.GetArg("cpio");
             var Root = Args.GetArg("root");
             var Out = Args.GetArg("out");
-
 
             if ((Cpio != null) && (Root != null))
             {
@@ -34,6 +41,7 @@ namespace CpioDump
                     CpioPacker.Save(Original, Out);
             }
         }
+
         static void ModifyInitramfs(ArgParser Args)
         {
             var RamFsFile = Args.GetArg("ramfs");
