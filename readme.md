@@ -1,5 +1,6 @@
 # initramfs editing
 Tool for fast modifying initramfs images (fix web, configs etc) from Windows without using Linux build environment.
+Only ascii-cpio (070701) archives with gzip compression.
 
 ## List files
 ```
