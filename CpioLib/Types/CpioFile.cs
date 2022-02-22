@@ -90,7 +90,18 @@ namespace CpioLib.Types
 
         // https://developer.adobe.com/experience-manager/reference-materials/6-4/javadoc/org/apache/commons/compress/archivers/cpio/CpioArchiveEntry.html
         public UInt32 INode => GetAsciiValue(6, 8);
-        public UInt32 Mode => GetAsciiValue(14, 8);
+        public UInt32 Mode
+        {
+            get
+            {
+                return GetAsciiValue(14, 8);
+            }
+            set
+            {
+                SetAsciiValue(14, 8, value);
+            }
+        }
+
         public UInt32 UserId => GetAsciiValue(22, 8);
         public UInt32 GroupId => GetAsciiValue(30, 8);
         public UInt32 NumLink => GetAsciiValue(38, 8);

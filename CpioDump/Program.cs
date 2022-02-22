@@ -28,7 +28,7 @@ namespace CpioDump
         {
             var Cpio = Args.GetArg("cpio");
             var Root = Args.GetArg("root");
-            var Delete = Args.GetArg("delete");
+            var Cmds = Args.GetArg("commands");
             var Out = Args.GetArg("out");
 
             if (Cpio != null)
@@ -43,11 +43,11 @@ namespace CpioDump
 
                     if (Root != null)
                     {
-                        var DeleteList = GetDeleteList(Delete);
+                        var Commands = GetCommands(Cmds);
                         // SD LOADER: C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
                         //var Packed = CpioParser.Load(@"C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.packed.cpio");
 
-                        CpioUpdater.UpdateArchive(ref Original, Root, DeleteList);
+                        CpioUpdater.UpdateArchive(ref Original, Root, Commands);
 
                         if (Out != null)
                             CpioPacker.Save(Original, Out);
@@ -72,7 +72,7 @@ namespace CpioDump
         {
             var RamFsFile = Args.GetArg("ramfs");
             var Root = Args.GetArg("root");
-            var Delete = Args.GetArg("delete");
+            var Cmds = Args.GetArg("commands");
             var Out = Args.GetArg("out");
 
             if (RamFsFile != null)
@@ -89,9 +89,9 @@ namespace CpioDump
 
                     if (Root != null)
                     {
-                        var DeleteList = GetDeleteList(Delete);
+                        var Commands = GetCommands(Cmds);
 
-                        CpioUpdater.UpdateArchive(ref Original, Root, DeleteList);
+                        CpioUpdater.UpdateArchive(ref Original, Root, Commands);
 
                         if (Out != null)
                         {
@@ -117,7 +117,7 @@ namespace CpioDump
             }
         }
 
-        static string[] GetDeleteList(string Filename)
+        static string[] GetCommands(string Filename)
         {
             if ((Filename != null) && File.Exists(Filename))
                 return File.ReadAllLines(Filename);
