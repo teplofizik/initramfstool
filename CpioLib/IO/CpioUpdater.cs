@@ -129,6 +129,22 @@ namespace CpioLib.IO
                             Console.WriteLine($"ChMod    {Path}: {ConvertModeToString(Mode)}");
                         }
                         break;
+                    case "chown":
+                        if (Command.Length == 3)
+                        {
+                            var Owner = Convert.ToUInt32(Command[2]);
+                            Archive.ChOwn(Path, Owner);
+                            Console.WriteLine($"ChOwn    {Path}: {Owner}");
+                        }
+                        break;
+                    case "group":
+                        if (Command.Length == 3)
+                        {
+                            var Group = Convert.ToUInt32(Command[2]);
+                            Archive.ChGroup(Path, Group);
+                            Console.WriteLine($"Group    {Path}: {Group}");
+                        }
+                        break;
                 }
             }
         }

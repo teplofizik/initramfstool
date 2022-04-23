@@ -102,8 +102,29 @@ namespace CpioLib.Types
             }
         }
 
-        public UInt32 UserId => GetAsciiValue(22, 8);
-        public UInt32 GroupId => GetAsciiValue(30, 8);
+        public UInt32 UserId
+        {
+            get
+            {
+                return GetAsciiValue(22, 8);
+            }
+            set
+            {
+                SetAsciiValue(22, 8, value);
+            }
+        }
+        public UInt32 GroupId
+        {
+            get
+            {
+                return GetAsciiValue(30, 8);
+            }
+            set
+            {
+                SetAsciiValue(30, 8, value);
+            }
+        }
+
         public UInt32 NumLink => GetAsciiValue(38, 8);
         public UInt32 ModificationTime => GetAsciiValue(46, 8);
 

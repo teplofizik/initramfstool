@@ -56,6 +56,23 @@ namespace CpioLib.Types
             }
         }
 
+        public void ChOwn(string Filename, UInt32 Uid)
+        {
+            var F = GetFile(Filename);
+            if (F != null)
+            {
+                F.UserId = Uid;
+            }
+        }
+        public void ChGroup(string Filename, UInt32 Gid)
+        {
+            var F = GetFile(Filename);
+            if (F != null)
+            {
+                F.GroupId = Gid;
+            }
+        }
+
         public void AddDir(string Filename, string LocalPath)
         {
             Files.Add(new CpioFile(Filename, LocalPath, true));

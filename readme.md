@@ -44,6 +44,8 @@ Available commands:
 | ------------- | ------------- |------------- |
 | rm | [path] | Remove file with specified path |
 | chmod | [path] [mode] | Change mode of file ('rwxrwxrwx' format: user,group,other) |
+| chown | [path] [uid] | Change user id of file |
+| group | [path] [gid] | Change group id of file |
 
 Content of image files will be replaced by content on file from root directory. Files that not exists in image, but exists in root directory will be added to image.
 
