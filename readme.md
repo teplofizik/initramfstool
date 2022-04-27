@@ -46,6 +46,9 @@ Available commands:
 | chmod | [path] [mode] | Change mode of file ('rwxrwxrwx' format: user,group,other) |
 | chown | [path] [uid] | Change user id of file |
 | group | [path] [gid] | Change group id of file |
+| chown | [path] [uid]:[gid] | Change user id and group id of file |
+| dir | [path] [mode] [uid] [gid] | Add directory with provided uid/gid/mode |
+| file | [path] [local] [mode] [uid] [gid] | Add file with content from exists file with provided uid/gid/mode |
 
 Content of image files will be replaced by content on file from root directory. Files that not exists in image, but exists in root directory will be added to image.
 

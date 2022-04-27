@@ -23,12 +23,20 @@ namespace CpioLib.Types
             return (HeaderWithPathAlighedSize + DataSize).GetAligned(4);
         }
 
+        private DateTime GetDirectoryInfo(string Dir)
+        {
+            if (Dir != null)
+                return new DirectoryInfo(Dir).LastWriteTime;
+            else
+                return DateTime.Now;
+        }
+
         public CpioFile(string Path, string LocalPath, bool Dir) : base(CalcPacketSize(Path, LocalPath, Dir))
         {
             var PathBytes = UTF8Encoding.UTF8.GetBytes(Path); 
             var Data = Dir ? new byte[] { } : File.ReadAllBytes(LocalPath);
 
-            var ModTime = Dir ? new DirectoryInfo(LocalPath).LastWriteTime : new FileInfo(LocalPath).LastWriteTime;
+            var ModTime = Dir ? GetDirectoryInfo(LocalPath) : new FileInfo(LocalPath).LastWriteTime;
 
             MaxNodeId++;
 
