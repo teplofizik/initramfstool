@@ -43,19 +43,24 @@ namespace RamFsLib.Types
             return DstFs;
         }
 
+        private bool HasFileName => (ReadByte(0x40 + 0x04) & (1 << 3)) != 0;
+
         private byte[] GetGZipHeader()
         {
             var Header = new List<byte>();
-            Header.AddRange(ReadArray(0x40, 9));
-            long Offset = 0x49;
-            byte Char = ReadByte(Offset);
-            while (Char != 0)
+            Header.AddRange(ReadArray(0x40, 10));
+            long Offset = 0x4A;
+            if (HasFileName)
             {
-                Header.Add(Char);
+                byte Char = ReadByte(Offset);
+                while (Char != 0)
+                {
+                    Header.Add(Char);
 
-                Char = ReadByte(++Offset);
+                    Char = ReadByte(++Offset);
+                }
+                Header.Add(0);
             }
-            Header.Add(0);
             return Header.ToArray();
         }
 
