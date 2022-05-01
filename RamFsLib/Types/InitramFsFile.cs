@@ -43,7 +43,7 @@ namespace RamFsLib.Types
             return DstFs;
         }
 
-        private bool HasFileName => (ReadByte(0x40 + 0x04) & (1 << 3)) != 0;
+        private bool HasFileName => (ReadByte(0x40 + 0x03) & (1 << 3)) != 0;
 
         private byte[] GetGZipHeader()
         {

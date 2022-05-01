@@ -2,7 +2,7 @@
   "profiles": {
     "CpioDump": {
       "commandName": "Project",
-      "commandLineArgs": "ramfs=./example/mtd8.bin root=./root/ commands=commands.txt out=initramfs2.bin.SD"
+      "commandLineArgs": "ramfs=./work/initramfs.bin.SD root=./work/root/ commands=./work/commands.txt out=initramfs.bin.SD"
     }
   }
 }
