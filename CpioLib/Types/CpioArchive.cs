@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CpioLib.Types.Nodes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,8 +9,8 @@ namespace CpioLib.Types
 {
     public class CpioArchive
     {
-        public CpioFile Trailer = null;
-        public List<CpioFile> Files = new List<CpioFile>();
+        public CpioNode Trailer = null;
+        public List<CpioNode> Files = new List<CpioNode>();
 
         public CpioArchive()
         {
@@ -26,7 +27,7 @@ namespace CpioLib.Types
             return false;
         }
 
-        public CpioFile GetFile(string Filename)
+        public CpioNode GetFile(string Filename)
         {
             foreach (var F in Files)
             {
@@ -36,9 +37,9 @@ namespace CpioLib.Types
             return null;
         }
 
-        public CpioFile[] GetFiles(string Path)
+        public CpioNode[] GetFiles(string Path)
         {
-            var Res = new List<CpioFile>();
+            var Res = new List<CpioNode>();
             foreach (var F in Files)
             {
                 if (F.Path.StartsWith(Path))
@@ -47,7 +48,7 @@ namespace CpioLib.Types
             return Res.ToArray();
         }
 
-        protected string[] ProcessFiles(string Path, Func<CpioFile,bool,bool> Action)
+        protected string[] ProcessFiles(string Path, Func<CpioNode,bool,bool> Action)
         {
             var Res = new List<string>();
             if (Path.Last() == '/')
@@ -112,12 +113,17 @@ namespace CpioLib.Types
 
         public void AddDir(string Filename, string LocalPath)
         {
-            Files.Add(new CpioFile(Filename, LocalPath, true));
+            Files.Add(new CpioDir(Filename, LocalPath));
         }
 
         public void AddFile(string Filename, string LocalPath)
         {
-            Files.Add(new CpioFile(Filename, LocalPath, false));
+            Files.Add(new CpioFile(Filename, LocalPath));
+        }
+
+        public void AddSLink(string Filename, string ToPath)
+        {
+            Files.Add(new CpioSLink(Filename, ToPath));
         }
 
         public void UpdateFile(string Filename, string LocalPath)

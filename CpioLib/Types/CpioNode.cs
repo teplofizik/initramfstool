@@ -8,41 +8,28 @@ using Extension.Packet;
 
 namespace CpioLib.Types
 {
-    public class CpioFile : RawPacket
+    public class CpioNode : RawPacket
     {
         public static UInt32 MaxNodeId = 0;
 
-        public CpioFile(byte[] Raw) : base(Raw) { }
-
-        private static long CalcPacketSize(string Path, string LocalPath, bool Dir)
+        protected static long CalcPacketSize(string Path, int DataSize)
         {
             var HeaderSize = 110;
             var PathSize = Path.Length + 1;
-            var DataSize = Dir ? 0 : File.ReadAllBytes(LocalPath).Length;
             var HeaderWithPathAlighedSize = Convert.ToInt64(HeaderSize + PathSize).GetAligned(4);
             return (HeaderWithPathAlighedSize + DataSize).GetAligned(4);
         }
 
-        private DateTime GetDirectoryInfo(string Dir)
+        public CpioNode(byte[] Raw) : base(Raw) { }
+
+        public CpioNode(string Path, byte[] Data, DateTime ModTime, uint Mode) : base(CalcPacketSize(Path, Data.Length))
         {
-            if (Dir != null)
-                return new DirectoryInfo(Dir).LastWriteTime;
-            else
-                return DateTime.Now;
-        }
-
-        public CpioFile(string Path, string LocalPath, bool Dir) : base(CalcPacketSize(Path, LocalPath, Dir))
-        {
-            var PathBytes = UTF8Encoding.UTF8.GetBytes(Path); 
-            var Data = Dir ? new byte[] { } : File.ReadAllBytes(LocalPath);
-
-            var ModTime = Dir ? GetDirectoryInfo(LocalPath) : new FileInfo(LocalPath).LastWriteTime;
-
+            var PathBytes = UTF8Encoding.UTF8.GetBytes(Path);
             MaxNodeId++;
 
             WriteArray(0, UTF8Encoding.UTF8.GetBytes("070701"), 6); // Header
             SetAsciiValue(6, 8, MaxNodeId); // INode []
-            SetAsciiValue(14, 8, Dir ? 0x41edU : 0x81a4U); // Mode  [0x41ed dir, 0x81a4 file]
+            SetAsciiValue(14, 8, Mode); // Mode  [0x41ed dir, 0x81a4 file]
 
             SetAsciiValue(22, 8, 0); // UserId
             SetAsciiValue(30, 8, 0); // GroupId
@@ -58,7 +45,7 @@ namespace CpioLib.Types
             WriteArray(HeaderWithPathSize, Data, Data.Length);
         }
 
-        public CpioFile UpdateContent(byte[] Data)
+        public CpioNode UpdateContent(byte[] Data)
         {
             var NewDataSize = HeaderWithPathSize + Data.Length;
             var NewRawSize = NewDataSize.GetAligned(4);
@@ -68,7 +55,7 @@ namespace CpioLib.Types
             Array.Copy(Header, NewRaw, HeaderWithPathSize);
             Array.Copy(Data, 0, NewRaw, HeaderWithPathSize, Data.Length);
 
-            var File = new CpioFile(NewRaw);
+            var File = new CpioNode(NewRaw);
             File.FileSize = Convert.ToUInt32(Data.Length);
 
             return File;

@@ -18,62 +18,77 @@ namespace CpioLib.IO
             }
         }
 
-        public static void UpdateArchive(ref CpioArchive Archive, string RootDir, string[] CommandsList)
+        public static void UpdateArchive(ref CpioArchive Archive, string RootDir, string CommandsFile)
         {
-            var Processed = new List<string>();
-            var Filenames = Array.ConvertAll(Archive.Files.ToArray(), F => F.Path);
-            foreach(var F in Filenames)
+            if (RootDir != null)
             {
-                var LocalPath = Path.Combine(RootDir, F);
-
-                if(File.Exists(LocalPath))
+                var Processed = new List<string>();
+                var Filenames = Array.ConvertAll(Archive.Files.ToArray(), F => F.Path);
+                foreach (var F in Filenames)
                 {
-                    Console.WriteLine($"Update  {F}");
+                    var LocalPath = Path.Combine(RootDir, F);
 
-                    Archive.UpdateFile(F, LocalPath);
-                    Processed.Add(F);
+                    if (File.Exists(LocalPath))
+                    {
+                        Console.WriteLine($"Update  {F}");
+
+                        Archive.UpdateFile(F, LocalPath);
+                        Processed.Add(F);
+                    }
                 }
-            }
 
-            var UpdateDirs = Directory.GetDirectories(RootDir, "*", SearchOption.AllDirectories);
-            foreach (var F in UpdateDirs)
-            {
-                // ./root/etc\init.d\pgnand.sh
-                var ConvertedF = F.Substring(RootDir.Length).Replace('\\', '/');
-
-                if (!Archive.Exists(ConvertedF))
+                var UpdateDirs = Directory.GetDirectories(RootDir, "*", SearchOption.AllDirectories);
+                foreach (var F in UpdateDirs)
                 {
-                    Archive.AddDir(ConvertedF, F);
-                    Console.WriteLine($"Add dir {ConvertedF}");
-
-                    Processed.Add(ConvertedF);
-                }
-            }
-
-            var UpdateFiles = Directory.GetFiles(RootDir, "*", SearchOption.AllDirectories);
-            foreach (var F in UpdateFiles)
-            {
-                // ./root/etc\init.d\pgnand.sh
-                var ConvertedF = F.Substring(RootDir.Length).Replace('\\', '/');
-
-                if (!Processed.Contains(ConvertedF))
-                {
-                    var Content = File.ReadAllBytes(F);
+                    // ./root/etc\init.d\pgnand.sh
+                    var ConvertedF = F.Substring(RootDir.Length).Replace('\\', '/');
 
                     if (!Archive.Exists(ConvertedF))
                     {
-                        Archive.AddFile(ConvertedF, F);
-                        Console.WriteLine($"Add     {ConvertedF}");
+                        Archive.AddDir(ConvertedF, F);
+                        Console.WriteLine($"Add dir {ConvertedF}");
+
                         Processed.Add(ConvertedF);
+                    }
+                }
+
+                var UpdateFiles = Directory.GetFiles(RootDir, "*", SearchOption.AllDirectories);
+                foreach (var F in UpdateFiles)
+                {
+                    // ./root/etc\init.d\pgnand.sh
+                    var ConvertedF = F.Substring(RootDir.Length).Replace('\\', '/');
+
+                    if (!Processed.Contains(ConvertedF))
+                    {
+                        var Content = File.ReadAllBytes(F);
+
+                        if (!Archive.Exists(ConvertedF))
+                        {
+                            Archive.AddFile(ConvertedF, F);
+                            Console.WriteLine($"Add     {ConvertedF}");
+                            Processed.Add(ConvertedF);
+                        }
                     }
                 }
             }
 
-            foreach (var Cmd in CommandsList)
+            ProcessCommands(ref Archive, CommandsFile);
+        }
+
+        private static bool ProcessCommands(ref CpioArchive Archive, string CommandsFile)
+        {
+            if ((CommandsFile != null) && File.Exists(CommandsFile))
             {
-                var Parts = Cmd.Split(new char[] { ' ' });
-                ProcessCommand(Parts, Archive);
+                var CommandsList = File.ReadAllLines(CommandsFile);
+                foreach (var Cmd in CommandsList)
+                {
+                    var Parts = Cmd.Split(new char[] { ' ' });
+                    ProcessCommand(CommandsFile, Parts, Archive);
+                }
+
+                return true;
             }
+            return false;
         }
 
         private static UInt32 ConvertMode(string Mode)
@@ -109,9 +124,10 @@ namespace CpioLib.IO
             return Res;
         }
 
-        private static void ProcessCommand(string[] Command, CpioArchive Archive)
+        private static void ProcessCommand(string CmdPath, string[] Command, CpioArchive Archive)
         {
-            if(Command.Length>= 2)
+            var Sh = Archive.GetFile("usr/bin/passwd");
+            if(Command.Length >= 2)
             {
                 var Cmd = Command[0];
                 var Path = Command[1];
@@ -191,6 +207,9 @@ namespace CpioLib.IO
                             else
                             {
                                 Archive.AddDir(Path, null);
+                                Archive.ChMod(Path, Mode);
+                                Archive.ChOwn(Path, Owner);
+                                Archive.ChGroup(Path, Group);
                                 Console.WriteLine($"Dir     {Path}: m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                             }
                         }
@@ -220,7 +239,7 @@ namespace CpioLib.IO
                                     Archive.AddFile(Path, LocalPath);
                                     Archive.ChMod(Path, Mode);
                                     Archive.ChOwn(Path, Owner);
-                                    Archive.ChGroup(Path, Owner);
+                                    Archive.ChGroup(Path, Group);
 
                                     Console.WriteLine($"File    {Path}: {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                                 }
@@ -233,6 +252,43 @@ namespace CpioLib.IO
                         else
                         {
                             Console.WriteLine($"File    {Path}: need {5} arguments, {Command.Length-1} given");
+                        }
+                        break;
+                    case "slink":
+                        // slink /usr/bin/scp /usr/sbin/dropbearmulti 777 0 0
+                        if (Command.Length == 6)
+                        {
+                            var ToPath = Command[2];
+                            var Mode = (Command[3].Length == 9) ? ConvertMode(Command[3]) : Convert.ToUInt32(Command[3], 16) & 0xFFF;
+                            var Owner = Convert.ToUInt32(Command[4]);
+                            var Group = Convert.ToUInt32(Command[5]);
+
+                            var ExLink = Archive.GetFile(Path);
+                            if (ExLink != null)
+                            {
+                                Console.WriteLine($"SLink   {Path} already exists");
+                            }
+                            else
+                            {
+                                Archive.AddSLink(Path, ToPath);
+                                Archive.ChMod(Path, Mode);
+                                Archive.ChOwn(Path, Owner);
+                                Archive.ChGroup(Path, Group);
+
+                                Console.WriteLine($"SLink   {Path}: {ToPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"SLink   {Path}: need {4} arguments, {Command.Length - 1} given");
+                        }
+                        break;
+                    case "include":
+
+                        if(!ProcessCommands(ref Archive, Path))
+                        {
+                            var RelPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CmdPath), Path);
+                            ProcessCommands(ref Archive, RelPath);
                         }
                         break;
                 }

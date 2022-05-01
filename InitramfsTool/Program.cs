@@ -42,11 +42,10 @@ namespace CpioDump
 
                     if (Root != null)
                     {
-                        var Commands = GetCommands(Cmds);
                         // SD LOADER: C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio
                         //var Packed = CpioParser.Load(@"C:\Users\Professional\Documents\antminer\cpio\Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.packed.cpio");
 
-                        CpioUpdater.UpdateArchive(ref Original, Root, Commands);
+                        CpioUpdater.UpdateArchive(ref Original, Root, Cmds);
 
                         if (Out != null)
                             CpioPacker.Save(Original, Out);
@@ -86,11 +85,9 @@ namespace CpioDump
                     var CpioRaw = Fs.UnpackedData;
                     var Original = CpioParser.Load(CpioRaw);
 
-                    if (Root != null)
+                    if ((Root != null) || (Cmds != null))
                     {
-                        var Commands = GetCommands(Cmds);
-
-                        CpioUpdater.UpdateArchive(ref Original, Root, Commands);
+                        CpioUpdater.UpdateArchive(ref Original, Root, Cmds);
 
                         if (Out != null)
                         {
@@ -114,14 +111,6 @@ namespace CpioDump
                     }
                 }
             }
-        }
-
-        static string[] GetCommands(string Filename)
-        {
-            if ((Filename != null) && File.Exists(Filename))
-                return File.ReadAllLines(Filename);
-            else
-                return new string[] { };
         }
     }
 }

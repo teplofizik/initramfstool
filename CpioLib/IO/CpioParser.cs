@@ -23,11 +23,11 @@ namespace CpioLib.IO
                 if (FI.IsCorrectMagic)
                 {
                     var Raw = Data.ReadArray(Offset, FI.FullFileBlockSize);
-                    var F = new CpioFile(Raw);
+                    var F = new CpioNode(Raw);
 
-                    if(F.INode > CpioFile.MaxNodeId)
+                    if(F.INode > CpioNode.MaxNodeId)
                     {
-                        CpioFile.MaxNodeId = F.INode;
+                        CpioNode.MaxNodeId = F.INode;
                     }
 
                     if (!FI.IsTrailer)
