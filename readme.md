@@ -30,8 +30,8 @@ Arguments:
 | Argument | Description | Example value |
 | ------------- | ------------- |------------- |
 | ramfs  | path to initramfs file  |./example/initramfs.bin.SD |
-| root  | path to directory with added and modified files  | ./root/ |
-| commands | path to file with commands (change mode, remove file) | ./commands.txt |
+| root  | path to directory with added and modified files [not required] | ./root/ |
+| commands | path to file with commands (change mode, remove file) [not required] | ./commands.txt |
 | out | path to processed initramfs with modified content | ./initramfs.bin.SD |
 
 Commands file example:
@@ -49,6 +49,9 @@ Available commands:
 | chown | [path] [uid]:[gid] | Change user id and group id of file |
 | dir | [path] [mode] [uid] [gid] | Add directory with provided uid/gid/mode |
 | file | [path] [local] [mode] [uid] [gid] | Add file with content from exists file with provided uid/gid/mode |
+| slink | [path] [to] [mode] [uid] [gid] | Add symbolic link to provided file or dir with provided uid/gid/mode |
+| include | [path] | Load another commands file from relative from that or absolute path |
+| echo | [message] | Print message to console |
 
 Content of image files will be replaced by content on file from root directory. Files that not exists in image, but exists in root directory will be added to image.
 
@@ -92,8 +95,8 @@ Arguments:
 | Argument | Description | Example value |
 | ------------- | ------------- |------------- |
 | cpio  | path to cpio file  |./example/Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio |
-| root  | path to directory with added and modified files  | ./root/ |
-| commands | path to file with commands (change mode, remove file) | ./commands.txt |
+| root  | path to directory with added and modified files [not required] | ./root/ |
+| commands | path to file with commands (change mode, remove file) [not required] | ./commands.txt |
 | out | path to processed cpio with modified content | ./Angstrom-antminer_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio |
 
 All logic same with initramfs part.
