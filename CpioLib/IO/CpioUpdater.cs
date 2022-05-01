@@ -22,6 +22,7 @@ namespace CpioLib.IO
         {
             if (RootDir != null)
             {
+                Console.WriteLine($"Root dir update {RootDir}");
                 var Processed = new List<string>();
                 var Filenames = Array.ConvertAll(Archive.Files.ToArray(), F => F.Path);
                 foreach (var F in Filenames)
@@ -75,22 +76,6 @@ namespace CpioLib.IO
             ProcessCommands(ref Archive, CommandsFile);
         }
 
-        private static bool ProcessCommands(ref CpioArchive Archive, string CommandsFile)
-        {
-            if ((CommandsFile != null) && File.Exists(CommandsFile))
-            {
-                var CommandsList = File.ReadAllLines(CommandsFile);
-                foreach (var Cmd in CommandsList)
-                {
-                    var Parts = Cmd.Split(new char[] { ' ' });
-                    ProcessCommand(CommandsFile, Parts, Archive);
-                }
-
-                return true;
-            }
-            return false;
-        }
-
         private static UInt32 ConvertMode(string Mode)
         {
             UInt32 ModeX = 0;
@@ -122,6 +107,26 @@ namespace CpioLib.IO
                 Res += ((Part & 0x01) != 0) ? "x" : "-";
             }
             return Res;
+        }
+
+        private static bool ProcessCommands(ref CpioArchive Archive, string CommandsFile)
+        {
+            if ((CommandsFile != null) && File.Exists(CommandsFile))
+            {
+                Console.WriteLine($"Commands {CommandsFile}");
+                var CommandsList = File.ReadAllLines(CommandsFile);
+                foreach (var Cmd in CommandsList)
+                {
+                    var TCmd = Cmd.Trim();
+                    if (TCmd.StartsWith('#')) continue;
+
+                    var Parts = TCmd.Split(new char[] { ' ' });
+                    ProcessCommand(CommandsFile, Parts, Archive);
+                }
+
+                return true;
+            }
+            return false;
         }
 
         private static void ProcessCommand(string CmdPath, string[] Command, CpioArchive Archive)
@@ -284,15 +289,22 @@ namespace CpioLib.IO
                         }
                         break;
                     case "include":
-
                         if(!ProcessCommands(ref Archive, Path))
                         {
                             var RelPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CmdPath), Path);
-                            ProcessCommands(ref Archive, RelPath);
+                            if(ProcessCommands(ref Archive, RelPath))
+                            {
+                                Console.WriteLine($"Include {Path}: not found");
+                            }
                         }
+                        break;
+                    case "echo":
+                        var Text = String.Join(' ', Command.Skip(1).ToArray());
+                        Console.WriteLine(Text);
                         break;
                 }
             }
         }
+
     }
 }
