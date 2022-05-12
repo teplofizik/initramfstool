@@ -266,7 +266,14 @@ namespace CpioLib.IO
                             var ExDir = Archive.GetFile(Path);
                             if (ExDir != null)
                             {
-                                LogWarning($"Dir     {Path} already exists");
+                                if (ExDir.FileType == CpioModeFileType.C_ISDIR)
+                                {
+                                    LogWarning($"Dir     {Path} already exists");
+                                }
+                                else
+                                {
+                                    LogError($"Dir    {Path}: node is not directory");
+                                }
                             }
                             else
                             {
@@ -297,12 +304,17 @@ namespace CpioLib.IO
                                 var ExFile = Archive.GetFile(Path);
                                 if (ExFile != null)
                                 {
-                                    Archive.UpdateFile(Path, LocalPath);
-                                    Archive.ChMod(Path, Mode);
-                                    Archive.ChOwn(Path, Owner);
-                                    Archive.ChGroup(Path, Group);
+                                    if (ExFile.FileType == CpioModeFileType.C_ISREG)
+                                    {
+                                        Archive.UpdateFile(Path, LocalPath);
+                                        Archive.ChMod(Path, Mode);
+                                        Archive.ChOwn(Path, Owner);
+                                        Archive.ChGroup(Path, Group);
 
-                                    LogOk($"File    {Path}: updated by {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                        LogOk($"File    {Path}: updated by {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                    }
+                                    else
+                                        LogError($"File    {Path}: file is not regular file");
                                 }
                                 else
                                 {
@@ -327,13 +339,18 @@ namespace CpioLib.IO
                                 var ExFile = Archive.GetFile(Path);
                                 if (ExFile != null)
                                 {
-                                    Archive.UpdateFile(Path, LocalPath);
+                                    if (ExFile.FileType == CpioModeFileType.C_ISREG)
+                                    {
+                                        Archive.UpdateFile(Path, LocalPath);
 
-                                    LogOk($"File    {Path}: updated by {LocalPath}");
+                                        LogOk($"File    {Path}: updated by {LocalPath}");
+                                    }
+                                    else
+                                        LogError($"File    {Path}: file is not regular file");
                                 }
                                 else
                                 {
-                                    LogOk($"File    {Path}: file not found, unable to modify");
+                                    LogError($"File    {Path}: file not found, unable to modify");
                                 }
                             }
                             else
@@ -358,7 +375,13 @@ namespace CpioLib.IO
                             var ExLink = Archive.GetFile(Path);
                             if (ExLink != null)
                             {
-                                LogError($"SLink   {Path} already exists");
+                                if (ExLink.FileType == CpioModeFileType.C_ISLNK)
+                                {
+                                    Archive.UpdateSLink(Path, ToPath);
+                                    LogOk($"SLink   {Path}: {ToPath} updated");
+                                }
+                                else
+                                    LogError($"File    {Path}: file is not symlink");
                             }
                             else
                             {
@@ -370,9 +393,29 @@ namespace CpioLib.IO
                                 LogOk($"SLink   {Path}: {ToPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                             }
                         }
+                        else if (Command.Length == 3)
+                        {
+                            var ToPath = Command[2];
+
+                            var ExLink = Archive.GetFile(Path);
+                            if (ExLink != null)
+                            {
+                                if(ExLink.FileType == CpioModeFileType.C_ISLNK)
+                                {
+                                    Archive.UpdateSLink(Path, ToPath);
+                                    LogOk($"SLink   {Path}: {ToPath} updated");
+                                }
+                                else
+                                    LogError($"File    {Path}: file is not symlink");
+                            }
+                            else
+                            {
+                                LogError($"File    {Path}: file not found");
+                            }
+                        }
                         else
                         {
-                            LogError($"SLink   {Path}: need 4 arguments, {Command.Length - 1} given");
+                            LogError($"SLink   {Path}: need 5 or 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "include":

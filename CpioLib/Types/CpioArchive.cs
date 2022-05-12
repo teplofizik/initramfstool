@@ -126,6 +126,23 @@ namespace CpioLib.Types
             Files.Add(new CpioSLink(Filename, ToPath));
         }
 
+        public void UpdateSLink(string Filename, string ToPath)
+        {
+            var F = GetFile(Filename);
+
+            if (F != null)
+            {
+                var Raw = UTF8Encoding.UTF8.GetBytes(ToPath);
+                var NF = F.UpdateContent(Raw);
+
+                for (int i = 0; i < Files.Count; i++)
+                {
+                    if (Files[i].Path == Filename)
+                        Files[i] = NF;
+                }
+            }
+        }
+
         public void UpdateFile(string Filename, string LocalPath)
         {
             var F = GetFile(Filename);
@@ -140,11 +157,6 @@ namespace CpioLib.Types
                     if (Files[i].Path == Filename)
                         Files[i] = NF;
                 }
-            }
-            else
-            {
-                // Add
-                
             }
         }
     }
