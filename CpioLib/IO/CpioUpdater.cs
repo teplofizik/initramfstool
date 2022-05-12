@@ -14,7 +14,15 @@ namespace CpioLib.IO
         {
             foreach (var F in Archive.Files)
             {
-                Console.WriteLine($"{F.Path}: m:{F.Mode:x02} in:{F.INode} links:{F.NumLink} maj:{F.Major} min:{F.Minor} rmaj:{F.RMajor} rmin:{F.RMinor}");
+                var Mode = F.Mode & 0x1FFU;
+                uint DstMode = 0;
+                DstMode |= (Mode & 0x7);
+                DstMode |= ((Mode >> 3) & 0x7) << 4;
+                DstMode |= ((Mode >> 6) & 0x7) << 8;
+
+                var TMode = ConvertModeToString(DstMode);
+
+                Console.WriteLine($"{F.Path}: {TMode} m:{F.Mode:x02} in:{F.INode} links:{F.NumLink} maj:{F.Major} min:{F.Minor} rmaj:{F.RMajor} rmin:{F.RMinor}");
             }
         }
 
@@ -225,6 +233,7 @@ namespace CpioLib.IO
                         break;
                     case "file":
                         // file /init ./content/init 755 0 0
+                        // file [path] [filepath]
                         // file [path] [filepath] [mode] [uid] [gid]
                         if (Command.Length == 6)
                         {
@@ -237,7 +246,12 @@ namespace CpioLib.IO
                                 var ExFile = Archive.GetFile(Path);
                                 if (ExFile != null)
                                 {
-                                    Console.WriteLine($"File    {Path} already exists");
+                                    Archive.UpdateFile(Path, LocalPath);
+                                    Archive.ChMod(Path, Mode);
+                                    Archive.ChOwn(Path, Owner);
+                                    Archive.ChGroup(Path, Group);
+
+                                    Console.WriteLine($"File    {Path}: updated by {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                                 }
                                 else
                                 {
@@ -247,6 +261,28 @@ namespace CpioLib.IO
                                     Archive.ChGroup(Path, Group);
 
                                     Console.WriteLine($"File    {Path}: {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"File    {Path}: file {LocalPath} not found");
+                            }
+                        }
+                        else if (Command.Length == 3)
+                        {
+                            var LocalPath = Command[2];
+                            if (File.Exists(LocalPath))
+                            {
+                                var ExFile = Archive.GetFile(Path);
+                                if (ExFile != null)
+                                {
+                                    Archive.UpdateFile(Path, LocalPath);
+
+                                    Console.WriteLine($"File    {Path}: updated by {LocalPath}");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"File    {Path}: file not found, unable to modify");
                                 }
                             }
                             else
