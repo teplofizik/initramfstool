@@ -56,6 +56,12 @@ namespace CpioDump
                         if (Extract != null)
                         {
                             CpioExtractor.Extract(Original, Extract);
+
+                            var BuildScript = Args.GetArg("buildscript");
+                            if (BuildScript != null)
+                            {
+                                CpioExtractor.GenerateScript(Original, Extract, BuildScript);
+                            }
                         }
                         else
                         {
@@ -103,6 +109,12 @@ namespace CpioDump
                         if (Extract != null)
                         {
                             CpioExtractor.Extract(Original, Extract);
+
+                            var BuildScript = Args.GetArg("buildscript");
+                            if (BuildScript != null)
+                            {
+                                CpioExtractor.GenerateScript(Original, Extract, BuildScript);
+                            }
                         }
                         else
                         {

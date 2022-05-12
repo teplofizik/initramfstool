@@ -14,15 +14,7 @@ namespace CpioLib.IO
         {
             foreach (var F in Archive.Files)
             {
-                var Mode = F.Mode & 0x1FFU;
-                uint DstMode = 0;
-                DstMode |= (Mode & 0x7);
-                DstMode |= ((Mode >> 3) & 0x7) << 4;
-                DstMode |= ((Mode >> 6) & 0x7) << 8;
-
-                var TMode = ConvertModeToString(DstMode);
-
-                Console.WriteLine($"{F.Path}: {TMode} m:{F.Mode:x02} in:{F.INode} links:{F.NumLink} maj:{F.Major} min:{F.Minor} rmaj:{F.RMajor} rmin:{F.RMinor}");
+                Console.WriteLine($"{F.Path}: {F.StrMode} m:{F.Mode:x02} in:{F.INode} links:{F.NumLink} maj:{F.Major} min:{F.Minor} rmaj:{F.RMajor} rmin:{F.RMinor}");
             }
         }
 
@@ -287,6 +279,46 @@ namespace CpioLib.IO
                         else
                         {
                             LogError($"Dir     {Path}: need 4 arguments, {Command.Length - 1} given");
+                        }
+                        break;
+                    case "nod":
+                        // nod dev/console rw--w--w- 0 0 c 5 1
+                        // nod [path] [mode] [uid] [gid] [type] [maj] [min]
+                        if (Command.Length == 8)
+                        {
+                            var LocalPath = Command[2];
+                            var Mode = (Command[3].Length == 9) ? ConvertMode(Command[3]) : Convert.ToUInt32(Command[3], 16) & 0xFFF;
+                            var Owner = Convert.ToUInt32(Command[4]);
+                            var Group = Convert.ToUInt32(Command[5]);
+
+                            var Type = Command[6];
+                            var Maj = Convert.ToUInt32(Command[7]);
+                            var Min = Convert.ToUInt32(Command[8]);
+                            if (String.Equals(Type, "c"))
+                            {
+                                LogError($"Nod     {Path}: unsupported node type {Type}");
+                            }    
+                            else
+                            {
+                                var ExFile = Archive.GetFile(Path);
+                                if (ExFile != null)
+                                {
+                                    LogError($"Nod    {Path}: node is already exists");
+                                }
+                                else
+                                {
+                                    Archive.AddNod(Path, Maj, Min);
+                                    Archive.ChMod(Path, Mode);
+                                    Archive.ChOwn(Path, Owner);
+                                    Archive.ChGroup(Path, Group);
+
+                                    LogOk($"Nod    {Path}: {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group} t:{Type} mj:{Maj} mn:{Min}");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            LogError($"Nod     {Path}: need 7 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "file":

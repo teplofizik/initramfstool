@@ -22,7 +22,13 @@ namespace CpioLib.Types
 
         public CpioNode(byte[] Raw) : base(Raw) { }
 
-        public CpioNode(string Path, byte[] Data, DateTime ModTime, uint Mode) : base(CalcPacketSize(Path, Data.Length))
+        public CpioNode(string Path, 
+                        byte[] Data, 
+                        DateTime ModTime, 
+                        uint Mode,
+                        uint Major = 0,
+                        uint Minor = 0) 
+            : base(CalcPacketSize(Path, Data.Length))
         {
             var PathBytes = UTF8Encoding.UTF8.GetBytes(Path);
             MaxNodeId++;
@@ -38,8 +44,8 @@ namespace CpioLib.Types
             SetAsciiValue(54, 8, Convert.ToUInt32(Data.Length)); // FileSize
             SetAsciiValue(62, 8, 8); // Major
             SetAsciiValue(70, 8, 1); // Minor
-            SetAsciiValue(78, 8, 0); // RMajor
-            SetAsciiValue(86, 8, 0); // RMinor
+            SetAsciiValue(78, 8, Major); // RMajor
+            SetAsciiValue(86, 8, Minor); // RMinor
             SetAsciiValue(94, 8, Convert.ToUInt32(PathBytes.Length + 1)); // NameSize
             WriteArray(110, PathBytes, PathBytes.Length);
             WriteArray(HeaderWithPathSize, Data, Data.Length);
@@ -96,6 +102,74 @@ namespace CpioLib.Types
                 SetAsciiValue(14, 8, value);
             }
         }
+
+        public UInt32 HexMode
+        {
+            get
+            {
+                var M = Mode & 0x1FFU;
+                uint Res = 0;
+                Res |= (M & 0x7);
+                Res |= ((M >> 3) & 0x7) << 4;
+                Res |= ((M >> 6) & 0x7) << 8;
+
+                return Res;
+            }
+            set
+            {
+                var M = Mode & ~0x1FFU;
+                M |= (value & 0x7);
+                M |= ((value >> 4) & 0x7) << 3;
+                M |= ((value >> 8) & 0x7) << 6;
+
+                Mode = M;
+            }
+        }
+
+        public string StrMode
+        {
+            get
+            {
+                var Res = "";
+                for (int i = 0; i < 3; i++)
+                {
+                    UInt32 Part = (HexMode >> (2 - i) * 4) & 0x7;
+
+                    Res += ((Part & 0x04) != 0) ? "r" : "-";
+                    Res += ((Part & 0x02) != 0) ? "w" : "-";
+                    Res += ((Part & 0x01) != 0) ? "x" : "-";
+                }
+                return Res;
+            }
+            set
+            {
+                {
+                    if ((value != null) && (value.Length == 9))
+                    {
+                        UInt32 ModeX = 0;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            int Offset = i * 3;
+
+                            for (int c = 0; c < 3; c++)
+                            {
+                                var C = value[Offset + c];
+
+                                if (C == 'r') ModeX |= 4U << ((2 - i) * 4);
+                                if (C == 'w') ModeX |= 2U << ((2 - i) * 4);
+                                if (C == 'x') ModeX |= 1U << ((2 - i) * 4);
+                            }
+                        }
+                        HexMode = ModeX;
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Invalid file mode: {value}");
+                    }
+                }
+            }
+        }
+    
 
         public UInt32 UserId
         {

@@ -87,13 +87,14 @@ namespace CpioLib.Types
                     if ((F.FileType == CpioModeFileType.C_ISREG) || !List)
                     {
                         // rwxr-x---
-                        var OldMode = F.Mode & ~0x1FFU;
+                        // var OldMode = F.Mode & ~0x1FFU;
 
-                        OldMode |= (Mode & 0x7);
-                        OldMode |= ((Mode >> 4) & 0x7) << 3;
-                        OldMode |= ((Mode >> 8) & 0x7) << 6;
+                        // OldMode |= (Mode & 0x7);
+                        // OldMode |= ((Mode >> 4) & 0x7) << 3;
+                        // OldMode |= ((Mode >> 8) & 0x7) << 6;
 
-                        F.Mode = OldMode;
+                        // F.Mode = OldMode;
+                        F.HexMode = Mode;
                         return true;
                     }
                     else
@@ -124,6 +125,10 @@ namespace CpioLib.Types
         public void AddSLink(string Filename, string ToPath)
         {
             Files.Add(new CpioSLink(Filename, ToPath));
+        }
+        public void AddNod(string Filename, uint Major, uint Minor)
+        {
+            Files.Add(new CpioNod(Filename, Major, Minor));
         }
 
         public void UpdateSLink(string Filename, string ToPath)
