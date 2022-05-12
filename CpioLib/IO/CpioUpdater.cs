@@ -84,6 +84,13 @@ namespace CpioLib.IO
             ProcessCommands(ref Archive, CommandsFile);
         }
 
+        private static string FilterPath(string Filename)
+        {
+            if (Filename.IndexOf('/') == 0)
+                Filename = Filename.Substring(1);
+            return Filename;
+        }
+
         private static UInt32 ConvertMode(string Mode)
         {
             UInt32 ModeX = 0;
@@ -143,7 +150,7 @@ namespace CpioLib.IO
             if(Command.Length >= 2)
             {
                 var Cmd = Command[0];
-                var Path = Command[1];
+                var Path = FilterPath(Command[1]);
                 switch (Cmd)
                 {
                     case "rm": 
@@ -159,7 +166,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            Console.WriteLine($"ChOwn    {Path}: need {2} arguments, {Command.Length - 1} given");
+                            Console.WriteLine($"ChOwn    {Path}: need 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "chown":
@@ -188,7 +195,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            Console.WriteLine($"ChOwn    {Path}: need {2} arguments, {Command.Length - 1} given");
+                            Console.WriteLine($"ChOwn    {Path}: need 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "group":
@@ -200,7 +207,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            Console.WriteLine($"Group    {Path}: need {2} arguments, {Command.Length - 1} given");
+                            Console.WriteLine($"Group    {Path}: need 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "dir":
@@ -228,7 +235,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            Console.WriteLine($"Dir     {Path}: need {4} arguments, {Command.Length - 1} given");
+                            Console.WriteLine($"Dir     {Path}: need 4 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "file":
@@ -292,7 +299,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            Console.WriteLine($"File    {Path}: need {5} arguments, {Command.Length-1} given");
+                            Console.WriteLine($"File    {Path}: need 5 or 2 arguments, {Command.Length-1} given");
                         }
                         break;
                     case "slink":
@@ -321,7 +328,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            Console.WriteLine($"SLink   {Path}: need {4} arguments, {Command.Length - 1} given");
+                            Console.WriteLine($"SLink   {Path}: need 4 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "include":
