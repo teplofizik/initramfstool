@@ -144,6 +144,28 @@ namespace CpioLib.IO
             return false;
         }
 
+        private static void LogOk(string Text)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(Text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private static void LogError(string Text)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(Text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        private static void LogWarning(string Text)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(Text);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+        
+
         private static void ProcessCommand(string CmdPath, string[] Command, CpioArchive Archive)
         {
             var Sh = Archive.GetFile("usr/bin/passwd");
@@ -153,16 +175,29 @@ namespace CpioLib.IO
                 var Path = FilterPath(Command[1]);
                 switch (Cmd)
                 {
-                    case "rm": 
-                        Archive.Delete(Path);
-                        Console.WriteLine($"Delete  {Path}");
+                    case "rm":
+                        {
+                            var ExFile = Archive.GetFile(Path);
+                            if (ExFile != null)
+                            {
+                                Archive.Delete(Path);
+                                LogOk($"Delete  {Path}");
+                            }
+                            else
+                            {
+                                LogError($"Delete  {Path}: file not found");
+                            }
+                        }
                         break;
                     case "chmod":
                         if (Command.Length == 3)
                         {
                             var Mode = (Command[2].Length == 9) ? ConvertMode(Command[2]) : Convert.ToUInt32(Command[2], 16) & 0xFFF;
                             var FileList = Archive.ChMod(Path, Mode);
-                            Array.ForEach(FileList, F => Console.WriteLine($"ChMod    {F}: {ConvertModeToString(Mode)}"));
+                            if (FileList.Length == 0)
+                                LogError($"ChMod  {Path}: item not found");
+                            else
+                                Array.ForEach(FileList, F => LogOk($"ChMod    {F}: {ConvertModeToString(Mode)}"));
                         }
                         else
                         {
@@ -183,19 +218,25 @@ namespace CpioLib.IO
                                     var Group = Convert.ToUInt32(Parts[1]);
                                     Archive.ChOwn(Path, Owner);
                                     var FileList = Archive.ChGroup(Path, Group);
-                                    Array.ForEach(FileList, F => Console.WriteLine($"ChOwn    {F}: {Owner}:{Group}"));
+                                    if (FileList.Length == 0)
+                                        LogError($"ChOwn  {Path}: item not found");
+                                    else
+                                        Array.ForEach(FileList, F => LogOk($"ChOwn    {F}: {Owner}:{Group}"));
                                 }
                             }
                             else
                             {
                                 var Owner = Convert.ToUInt32(Command[2]);
                                 var FileList = Archive.ChOwn(Path, Owner);
-                                Array.ForEach(FileList, F => Console.WriteLine($"ChOwn    {F}: {Owner}"));
+                                if (FileList.Length == 0)
+                                    LogError($"ChOwn  {Path}: item not found");
+                                else
+                                    Array.ForEach(FileList, F => LogOk($"ChOwn    {F}: {Owner}"));
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"ChOwn    {Path}: need 2 arguments, {Command.Length - 1} given");
+                            LogError($"ChOwn    {Path}: need 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "group":
@@ -203,11 +244,14 @@ namespace CpioLib.IO
                         {
                             var Group = Convert.ToUInt32(Command[2]);
                             var FileList = Archive.ChGroup(Path, Group);
-                            Array.ForEach(FileList, F => Console.WriteLine($"Group    {F}: {Group}"));
+                            if (FileList.Length == 0)
+                                LogError($"Group  {Path}: item not found");
+                            else
+                                Array.ForEach(FileList, F => LogOk($"Group    {F}: {Group}"));
                         }
                         else
                         {
-                            Console.WriteLine($"Group    {Path}: need 2 arguments, {Command.Length - 1} given");
+                            LogError($"Group    {Path}: need 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "dir":
@@ -222,7 +266,7 @@ namespace CpioLib.IO
                             var ExDir = Archive.GetFile(Path);
                             if (ExDir != null)
                             {
-                                Console.WriteLine($"Dir     {Path} already exists");
+                                LogWarning($"Dir     {Path} already exists");
                             }
                             else
                             {
@@ -230,12 +274,12 @@ namespace CpioLib.IO
                                 Archive.ChMod(Path, Mode);
                                 Archive.ChOwn(Path, Owner);
                                 Archive.ChGroup(Path, Group);
-                                Console.WriteLine($"Dir     {Path}: m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                LogOk($"Dir     {Path}: m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"Dir     {Path}: need 4 arguments, {Command.Length - 1} given");
+                            LogError($"Dir     {Path}: need 4 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "file":
@@ -258,7 +302,7 @@ namespace CpioLib.IO
                                     Archive.ChOwn(Path, Owner);
                                     Archive.ChGroup(Path, Group);
 
-                                    Console.WriteLine($"File    {Path}: updated by {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                    LogOk($"File    {Path}: updated by {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                                 }
                                 else
                                 {
@@ -267,12 +311,12 @@ namespace CpioLib.IO
                                     Archive.ChOwn(Path, Owner);
                                     Archive.ChGroup(Path, Group);
 
-                                    Console.WriteLine($"File    {Path}: {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                    LogOk($"File    {Path}: {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine($"File    {Path}: file {LocalPath} not found");
+                                LogError($"File    {Path}: file {LocalPath} not found");
                             }
                         }
                         else if (Command.Length == 3)
@@ -285,21 +329,21 @@ namespace CpioLib.IO
                                 {
                                     Archive.UpdateFile(Path, LocalPath);
 
-                                    Console.WriteLine($"File    {Path}: updated by {LocalPath}");
+                                    LogOk($"File    {Path}: updated by {LocalPath}");
                                 }
                                 else
                                 {
-                                    Console.WriteLine($"File    {Path}: file not found, unable to modify");
+                                    LogOk($"File    {Path}: file not found, unable to modify");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine($"File    {Path}: file {LocalPath} not found");
+                                LogError($"File    {Path}: file {LocalPath} not found");
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"File    {Path}: need 5 or 2 arguments, {Command.Length-1} given");
+                            LogError($"File    {Path}: need 5 or 2 arguments, {Command.Length-1} given");
                         }
                         break;
                     case "slink":
@@ -314,7 +358,7 @@ namespace CpioLib.IO
                             var ExLink = Archive.GetFile(Path);
                             if (ExLink != null)
                             {
-                                Console.WriteLine($"SLink   {Path} already exists");
+                                LogError($"SLink   {Path} already exists");
                             }
                             else
                             {
@@ -323,21 +367,21 @@ namespace CpioLib.IO
                                 Archive.ChOwn(Path, Owner);
                                 Archive.ChGroup(Path, Group);
 
-                                Console.WriteLine($"SLink   {Path}: {ToPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
+                                LogOk($"SLink   {Path}: {ToPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group}");
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"SLink   {Path}: need 4 arguments, {Command.Length - 1} given");
+                            LogError($"SLink   {Path}: need 4 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "include":
                         if(!ProcessCommands(ref Archive, Path))
                         {
                             var RelPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CmdPath), Path);
-                            if(ProcessCommands(ref Archive, RelPath))
+                            if(!ProcessCommands(ref Archive, RelPath))
                             {
-                                Console.WriteLine($"Include {Path}: not found");
+                                LogError($"Include {Path}: not found");
                             }
                         }
                         break;
