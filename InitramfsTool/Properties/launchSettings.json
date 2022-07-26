@@ -2,7 +2,7 @@
   "profiles": {
     "CpioDump": {
       "commandName": "Project",
-      "commandLineArgs": "ramfs=./work/initramfs.bin.SD commands=./work/commands.txt out=initramfs.bin.SD"
+      "commandLineArgs": "ramfs=./zynq/initramfs.bin.SD repack=./zynq/patched.ext4 out=initramfs.zynq.SD"
     }
   }
 }

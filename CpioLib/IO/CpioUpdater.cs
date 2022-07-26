@@ -156,12 +156,12 @@ namespace CpioLib.IO
             Console.WriteLine(Text);
             Console.ForegroundColor = ConsoleColor.White;
         }
-        
+
 
         private static void ProcessCommand(string CmdPath, string[] Command, CpioArchive Archive)
         {
             var Sh = Archive.GetFile("usr/bin/passwd");
-            if(Command.Length >= 2)
+            if (Command.Length >= 2)
             {
                 var Cmd = Command[0];
                 var Path = FilterPath(Command[1]);
@@ -169,15 +169,32 @@ namespace CpioLib.IO
                 {
                     case "rm":
                         {
-                            var ExFile = Archive.GetFile(Path);
-                            if (ExFile != null)
+                            if (Path.Length > 0)
                             {
-                                Archive.Delete(Path);
-                                LogOk($"Delete  {Path}");
+                                var ExFile = Archive.GetFile(Path);
+                                if (ExFile != null)
+                                {
+                                    Archive.Delete(Path);
+                                    LogOk($"Delete  {Path}");
+                                }
+                                else
+                                {
+                                    if(Path.Last() == '/')
+                                    {
+                                        var Files = Archive.DeleteFolder(Path);
+                                        if(Files.Length > 0)
+                                        {
+                                            foreach (var F in Files)
+                                                LogOk($"Delete  {F}");
+                                        }
+                                        else
+                                            LogError($"Delete  {Path}: file not found");
+                                    }
+                                }
                             }
                             else
                             {
-                                LogError($"Delete  {Path}: file not found");
+                                LogError($"Delete: path is empty");
                             }
                         }
                         break;
@@ -286,18 +303,17 @@ namespace CpioLib.IO
                         // nod [path] [mode] [uid] [gid] [type] [maj] [min]
                         if (Command.Length == 8)
                         {
-                            var LocalPath = Command[2];
-                            var Mode = (Command[3].Length == 9) ? ConvertMode(Command[3]) : Convert.ToUInt32(Command[3], 16) & 0xFFF;
-                            var Owner = Convert.ToUInt32(Command[4]);
-                            var Group = Convert.ToUInt32(Command[5]);
+                            var Mode = (Command[2].Length == 9) ? ConvertMode(Command[2]) : Convert.ToUInt32(Command[2], 16) & 0xFFF;
+                            var Owner = Convert.ToUInt32(Command[3]);
+                            var Group = Convert.ToUInt32(Command[4]);
 
-                            var Type = Command[6];
-                            var Maj = Convert.ToUInt32(Command[7]);
-                            var Min = Convert.ToUInt32(Command[8]);
-                            if (String.Equals(Type, "c"))
+                            var Type = Command[5];
+                            var Maj = Convert.ToUInt32(Command[6]);
+                            var Min = Convert.ToUInt32(Command[7]);
+                            if (!String.Equals(Type, "c"))
                             {
                                 LogError($"Nod     {Path}: unsupported node type {Type}");
-                            }    
+                            }
                             else
                             {
                                 var ExFile = Archive.GetFile(Path);
@@ -312,7 +328,7 @@ namespace CpioLib.IO
                                     Archive.ChOwn(Path, Owner);
                                     Archive.ChGroup(Path, Group);
 
-                                    LogOk($"Nod    {Path}: {LocalPath} m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group} t:{Type} mj:{Maj} mn:{Min}");
+                                    LogOk($"Nod    {Path}: m:{ ConvertModeToString(Mode) } u:{Owner} g:{Group} t:{Type} mj:{Maj} mn:{Min}");
                                 }
                             }
                         }
@@ -392,7 +408,7 @@ namespace CpioLib.IO
                         }
                         else
                         {
-                            LogError($"File    {Path}: need 5 or 2 arguments, {Command.Length-1} given");
+                            LogError($"File    {Path}: need 5 or 2 arguments, {Command.Length - 1} given");
                         }
                         break;
                     case "slink":
@@ -432,7 +448,7 @@ namespace CpioLib.IO
                             var ExLink = Archive.GetFile(Path);
                             if (ExLink != null)
                             {
-                                if(ExLink.FileType == CpioModeFileType.C_ISLNK)
+                                if (ExLink.FileType == CpioModeFileType.C_ISLNK)
                                 {
                                     Archive.UpdateSLink(Path, ToPath);
                                     LogOk($"SLink   {Path}: {ToPath} updated");
@@ -451,10 +467,10 @@ namespace CpioLib.IO
                         }
                         break;
                     case "include":
-                        if(!ProcessCommands(ref Archive, Path))
+                        if (!ProcessCommands(ref Archive, Path))
                         {
                             var RelPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CmdPath), Path);
-                            if(!ProcessCommands(ref Archive, RelPath))
+                            if (!ProcessCommands(ref Archive, RelPath))
                             {
                                 LogError($"Include {Path}: not found");
                             }
@@ -464,9 +480,29 @@ namespace CpioLib.IO
                         var Text = String.Join(' ', Command.Skip(1).ToArray());
                         Console.WriteLine(Text);
                         break;
+                    default:
+                        LogError($"Unrecognized command: {String.Join(" ", Command)}");
+                        break;
+
+                }
+            }
+            else if (Command.Length == 1)
+            {
+                var Cmd = Command[0];
+
+                switch (Cmd)
+                {
+                    case "clear":
+                        Archive.Clear();
+                        LogOk($"Removed all files...");
+                        break;
+                    case "":
+                        break;
+                    default:
+                        LogError($"Unrecognized command: {String.Join(" ", Command)}");
+                        break;
                 }
             }
         }
-
     }
 }

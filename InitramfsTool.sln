@@ -17,6 +17,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RamFsLib", "RamFsLib\RamFsL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions", "Extensions\Extensions.csproj", "{578CE3A5-682A-466E-982F-DF676D6C78FE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BmuTool", "BmuTool\BmuTool.csproj", "{63E7DA1C-1D8F-4BFA-8983-1DFBE76AD57A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ext4Lib", "Ext4Lib\Ext4Lib.csproj", "{7D1C643C-A25C-4D23-B9CF-8DB7C974B90D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{578CE3A5-682A-466E-982F-DF676D6C78FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{578CE3A5-682A-466E-982F-DF676D6C78FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{578CE3A5-682A-466E-982F-DF676D6C78FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63E7DA1C-1D8F-4BFA-8983-1DFBE76AD57A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63E7DA1C-1D8F-4BFA-8983-1DFBE76AD57A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63E7DA1C-1D8F-4BFA-8983-1DFBE76AD57A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63E7DA1C-1D8F-4BFA-8983-1DFBE76AD57A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D1C643C-A25C-4D23-B9CF-8DB7C974B90D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D1C643C-A25C-4D23-B9CF-8DB7C974B90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D1C643C-A25C-4D23-B9CF-8DB7C974B90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D1C643C-A25C-4D23-B9CF-8DB7C974B90D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

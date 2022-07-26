@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Extension.Array;
+using System.IO.Compression;
 
 namespace CpioLib.IO
 {
@@ -12,6 +13,11 @@ namespace CpioLib.IO
         public static void Save(CpioArchive Archive, string FileName)
         {
             File.WriteAllBytes(FileName, GetRawData(Archive));
+        }
+
+        public static void SaveGz(CpioArchive Archive, string FileName)
+        {
+            File.WriteAllBytes(FileName, Compress(GetRawData(Archive)));
         }
 
         public static byte[] GetRawData(CpioArchive Archive)
@@ -30,5 +36,19 @@ namespace CpioLib.IO
             for (long i = 0; i < Padding; i++) Res.Add(0);
             return Res.ToArray();
         }
+
+        static byte[] Compress(byte[] data)
+        {
+            using (var compressedStream = new MemoryStream())
+            using (var zipStream = new GZipStream(compressedStream, CompressionLevel.Optimal))
+            {
+                zipStream.Write(data, 0, data.Length);
+                zipStream.Close();
+                var Compressed = compressedStream.ToArray();
+
+                return Compressed;
+            }
+        }
+
     }
 }

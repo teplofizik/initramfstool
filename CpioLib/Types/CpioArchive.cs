@@ -1,6 +1,7 @@
 ﻿using CpioLib.Types.Nodes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -75,6 +76,14 @@ namespace CpioLib.Types
             return Res.ToArray();
         }
 
+        public string[] DeleteFolder(string Filename)
+        {
+            var List = Array.ConvertAll(Files.Where(F => (F.Path.StartsWith(Filename))).ToArray(), F => F.Path);
+
+            Files.RemoveAll(F => (F.Path.StartsWith(Filename)));
+            return List;
+        }
+
         public void Delete(string Filename)
         {
             Files.RemoveAll(F => (F.Path == Filename));
@@ -129,6 +138,19 @@ namespace CpioLib.Types
         public void AddNod(string Filename, uint Major, uint Minor)
         {
             Files.Add(new CpioNod(Filename, Major, Minor));
+        }
+
+        public void Clear()
+        {
+            var Filenames = Array.ConvertAll(Files.ToArray(), F => F.Path);
+            foreach(var F in Filenames)
+            {
+                if (!String.Equals(F, "."))
+                {
+                    Debug.WriteLine(F);
+                    Delete(F);
+                }
+            }
         }
 
         public void UpdateSLink(string Filename, string ToPath)

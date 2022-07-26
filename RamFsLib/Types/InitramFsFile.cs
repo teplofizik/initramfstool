@@ -36,8 +36,6 @@ namespace RamFsLib.Types
             Dst.WriteUInt32BE(0x04, 0); // Reset CRC32
             Dst.WriteUInt32BE(0x04, CalcCrc(Dst.ReadArray(0, 0x40)));
 
-            //File.WriteAllBytes("encoded.gz", Data);
-
             var DstFs = new InitramFsFile(Dst);
 
             return DstFs;
