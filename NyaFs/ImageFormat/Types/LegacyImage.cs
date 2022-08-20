@@ -7,11 +7,44 @@ using System.Text;
 
 namespace NyaFs.ImageFormat.Types
 {
-    class LegacyImage : RawPacket
+	public class LegacyImage : RawPacket
     {
+		readonly static byte[] GzipHeader = new byte[] { 0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A };
+
 		public LegacyImage(byte[] Data) : base(Data) { }
 
 		public LegacyImage(string Filename) : base(System.IO.File.ReadAllBytes(Filename)) { }
+
+		public LegacyImage(ImageInfo Info, byte[] gzPackedData) : base(0x40 + GzipHeader.Length + gzPackedData.Length)
+        {
+			WriteUInt32BE(0, 0x27051956);
+
+			Length = GzipHeader.Length + gzPackedData.Length;
+			Type = Info.Type;
+			CPUArchitecture = Info.Architecture;
+			OperatingSystem = Info.OperatingSystem;
+			DataLoadAddress = Info.DataLoadAddress;
+			EntryPointAddress = Info.EntryPointAddress;
+			Compression = CompressionType.IH_COMP_GZIP;
+
+			WriteArray(0x40, GzipHeader, GzipHeader.Length);
+			WriteArray(0x40 + GzipHeader.Length, gzPackedData, gzPackedData.Length);
+
+			WriteUInt32BE(0x08, Convert.ToUInt32(((DateTimeOffset)DateTimeOffset.Now).ToUnixTimeSeconds()));
+			WriteString(0x20, Info.Name, 0x20);
+			WriteUInt32BE(0x04, 0); 
+			
+			// Calc CRC
+			WriteUInt32BE(0x18, CalcCrc(ReadArray(0x40, Length)));
+			WriteUInt32BE(0x04, CalcCrc(ReadArray(0, 0x40)));
+		}
+
+		// Named gzip header:
+		// 1F 8B 08 08 85 AA 6B 62 02 03 41 6E 67 73 74 72 6F 6D 2D 78 78 78 78 78 78 78 78 5F 6D 2D 65 67 6C 69 62 63 2D 69 70 6B 2D 76 32 30 31 33 2E 30 36 2D 62 65 61 67 6C 65 62 6F 6E 65 2E 72 6F 6F 74 66 73 2E 63 70 69 6F 00
+		// ‹…ЄkbAngstrom-xxxxxxxx_m-eglibc-ipk-v2013.06-beaglebone.rootfs.cpio�
+
+		// Unnamed gzip header
+		// 1F 8B 08 00 00 00 00 00 00 0A
 
 		/// <summary>
 		/// Ключевая последовательность байт для идентификации образа

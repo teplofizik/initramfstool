@@ -26,8 +26,10 @@ namespace CpioLib.Types
                         byte[] Data, 
                         DateTime ModTime, 
                         uint Mode,
-                        uint Major = 0,
-                        uint Minor = 0) 
+                        uint RMajor = 0,
+                        uint RMinor = 0,
+                        uint Major = 8,
+                        uint Minor = 1) 
             : base(CalcPacketSize(Path, Data.Length))
         {
             var PathBytes = UTF8Encoding.UTF8.GetBytes(Path);
@@ -42,10 +44,10 @@ namespace CpioLib.Types
             SetAsciiValue(38, 8, 1); // NumLink ???
             SetAsciiValue(46, 8, GetUnixTimestamp(ModTime)); // ModificationTime
             SetAsciiValue(54, 8, Convert.ToUInt32(Data.Length)); // FileSize
-            SetAsciiValue(62, 8, 8); // Major
-            SetAsciiValue(70, 8, 1); // Minor
-            SetAsciiValue(78, 8, Major); // RMajor
-            SetAsciiValue(86, 8, Minor); // RMinor
+            SetAsciiValue(62, 8, Major); // Major
+            SetAsciiValue(70, 8, Minor); // Minor
+            SetAsciiValue(78, 8, RMajor); // RMajor
+            SetAsciiValue(86, 8, RMinor); // RMinor
             SetAsciiValue(94, 8, Convert.ToUInt32(PathBytes.Length + 1)); // NameSize
             WriteArray(110, PathBytes, PathBytes.Length);
             WriteArray(HeaderWithPathSize, Data, Data.Length);
@@ -194,7 +196,18 @@ namespace CpioLib.Types
             }
         }
 
-        public UInt32 NumLink => GetAsciiValue(38, 8);
+        public UInt32 NumLink
+        {
+            get
+            {
+                return GetAsciiValue(38, 8);
+            }
+            set
+            {
+                SetAsciiValue(38, 8, value);
+            }
+        }
+
         public UInt32 ModificationTime => GetAsciiValue(46, 8);
 
         /// <summary>

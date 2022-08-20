@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace NyaFs.ImageFormat.Types
-{ 
+{
 	/// <summary>
 	/// Operating System Codes
 	/// The following are exposed to uImage header.
 	/// New IDs *MUST* be appended at the end of the list and *NEVER*
 	/// inserted for backward compatibility.
 	/// </summary>
-	enum OS
+	public enum OS
 	{
 		IH_OS_INVALID = 0,  /* Invalid OS	*/
 		IH_OS_OPENBSD,          /* OpenBSD	*/

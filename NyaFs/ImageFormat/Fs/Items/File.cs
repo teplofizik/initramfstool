@@ -8,7 +8,7 @@ namespace NyaFs.ImageFormat.Fs.Items
     {
         public byte[] Content;
 
-        public File(string Filename, uint User, uint Group, uint Mode, byte[] Content) : base("file", Filename, User, Group, Mode)
+        public File(string Filename, uint User, uint Group, uint Mode, byte[] Content) : base(Types.FilesystemItemType.File, Filename, User, Group, Mode)
         {
             this.Content = Content;
         }

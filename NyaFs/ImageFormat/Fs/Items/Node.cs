@@ -6,7 +6,7 @@ namespace NyaFs.ImageFormat.Fs.Items
 {
     public class Node : FilesystemItem
     {
-        public Node(string Filename, uint User, uint Group, uint Mode) : base("node", Filename, User, Group, Mode)
+        public Node(string Filename, uint User, uint Group, uint Mode) : base(Types.FilesystemItemType.Node, Filename, User, Group, Mode)
         {
 
         }

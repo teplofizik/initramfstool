@@ -8,7 +8,7 @@ namespace NyaFs.ImageFormat.Fs.Items
     {
         public List<FilesystemItem> Items = new List<FilesystemItem>();
 
-        public Dir(string Filename, uint User, uint Group, uint Mode) : base("dir", Filename, User, Group, Mode)
+        public Dir(string Filename, uint User, uint Group, uint Mode) : base(Types.FilesystemItemType.Dir, Filename, User, Group, Mode)
         {
 
         }

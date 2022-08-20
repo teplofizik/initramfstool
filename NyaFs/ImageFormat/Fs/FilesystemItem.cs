@@ -6,7 +6,18 @@ namespace NyaFs.ImageFormat.Fs
 {
     public class FilesystemItem
     {
-        public FilesystemItem(string Type, string Filename, uint User, uint Group, uint Mode)
+        private static string PreprocessFilename(string Filename)
+        {
+            if (Filename.Length > 0)
+            {
+                if ((Filename[0] == '\\') || (Filename[0] == '/'))
+                    return Filename.Substring(1);
+            }
+
+            return Filename;
+        }
+
+        public FilesystemItem(Types.FilesystemItemType Type, string Filename, uint User, uint Group, uint Mode)
         {
             this.ItemType = Type;
 
@@ -14,10 +25,10 @@ namespace NyaFs.ImageFormat.Fs
             this.Group = Group;
             this.Mode = Mode;
 
-            this.Filename = Filename;
+            this.Filename = PreprocessFilename(Filename);
         }
 
-        public readonly string ItemType;
+        public readonly Types.FilesystemItemType ItemType;
 
         public uint User;
         public uint Group;

@@ -39,8 +39,10 @@ namespace Sample
         {
             //Open a Linux ext4 disk image
             var disk = ExtDisk.Open(@".\ext4.img");
+
             //Get the file system
             var fs = ExtFileSystem.Open(disk, disk.Partitions[0]);
+
             ReadFileContent(fs);
             ListAllFiles(fs);
             CreateFile(fs);

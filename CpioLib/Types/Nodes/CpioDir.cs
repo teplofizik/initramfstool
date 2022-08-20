@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CpioLib.Types.Nodes
 {
-    class CpioDir : CpioNode
+    public class CpioDir : CpioNode
     {
         public CpioDir(string Path, string LocalPath) : base(Path, 
                                                              new byte[] { }, 
@@ -19,6 +19,14 @@ namespace CpioLib.Types.Nodes
                                            GetDirectoryInfo(null),
                                            0x41edU)
         {
+        }
+
+        public CpioDir(string Path, uint Links) : base(Path,
+                                                 new byte[] { },
+                                                 GetDirectoryInfo(null),
+                                                 0x41edU)
+        {
+            NumLink = Links;
         }
 
         private static DateTime GetDirectoryInfo(string Dir)

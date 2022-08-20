@@ -11,7 +11,7 @@ namespace NyaFs.ImageFormat.Types
 	 * New IDs *MUST* be appended at the end of the list and *NEVER*
 	 * inserted for backward compatibility.
 	 */
-	enum CPU {
+	public enum CPU {
 		IH_ARCH_INVALID = 0,    /* Invalid CPU	*/
 		IH_ARCH_ALPHA,          /* Alpha	*/
 		IH_ARCH_ARM,            /* ARM		*/

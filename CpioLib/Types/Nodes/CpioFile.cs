@@ -8,13 +8,14 @@ namespace CpioLib.Types.Nodes
 {
     class CpioFile : CpioNode
     {
-        public CpioFile(string Path, DateTime Modifed, byte[] Data) : base(Path,
+        public CpioFile(string Path, DateTime Modified, byte[] Data) : base(Path,
                                                                            Data,
-                                                                           Modifed,
+                                                                           Modified,
                                                                            0x81a4U)
         {
 
         }
+
         public CpioFile(string Path, string LocalPath) : this(Path,
                                                               new FileInfo(LocalPath).LastWriteTime,
                                                               File.ReadAllBytes(LocalPath))

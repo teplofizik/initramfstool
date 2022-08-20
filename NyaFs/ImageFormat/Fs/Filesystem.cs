@@ -26,7 +26,7 @@ namespace NyaFs.ImageFormat.Fs
             Console.WriteLine(Dir.ToString());
             foreach(var I in Dir.Items)
             {
-                if (I.ItemType == "dir")
+                if (I.ItemType == Types.FilesystemItemType.Dir)
                     DumpDir(I as Items.Dir);
                 else
                     Console.WriteLine(I.ToString());
@@ -73,7 +73,7 @@ namespace NyaFs.ImageFormat.Fs
                         if (Rel == Path)
                             return I;
 
-                        if (I.ItemType == "dir")
+                        if (I.ItemType == Types.FilesystemItemType.Dir)
                         {
                             Base = I as Items.Dir;
                             Found = true;

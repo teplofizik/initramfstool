@@ -121,6 +121,11 @@ namespace CpioLib.Types
             return ProcessFiles(Filename, (F, List) => { F.GroupId = Gid; return true; });
         }
 
+        public void AddDir(string Filename, uint Links = 1u)
+        {
+            Files.Add(new CpioDir(Filename, Links));
+        }
+
         public void AddDir(string Filename, string LocalPath)
         {
             Files.Add(new CpioDir(Filename, LocalPath));
@@ -131,13 +136,18 @@ namespace CpioLib.Types
             Files.Add(new CpioFile(Filename, LocalPath));
         }
 
+        public void AddFile(string Path, DateTime Modified, byte[] Data)
+        {
+            Files.Add(new CpioFile(Path, Modified, Data));
+        }
+
         public void AddSLink(string Filename, string ToPath)
         {
             Files.Add(new CpioSLink(Filename, ToPath));
         }
-        public void AddNod(string Filename, uint Major, uint Minor)
+        public void AddNod(string Filename, uint RMajor, uint RMinor)
         {
-            Files.Add(new CpioNod(Filename, Major, Minor));
+            Files.Add(new CpioNod(Filename, RMajor, RMinor));
         }
 
         public void Clear()

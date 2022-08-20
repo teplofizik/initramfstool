@@ -73,7 +73,8 @@ SharpExt4::ExtDisk^ SharpExt4::ExtDisk::Open(String^ imagePath)
 			}
 			return disk;
 		}
-		throw gcnew IOException("Could not read disk MBR.");
+		else
+			throw gcnew IOException("Could not read disk MBR.");
 	}
 	throw gcnew FileNotFoundException("Could not find file '" + imagePath +"'.");
 }

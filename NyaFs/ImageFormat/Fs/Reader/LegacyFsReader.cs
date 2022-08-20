@@ -8,21 +8,14 @@ namespace NyaFs.ImageFormat.Fs.Reader
 {
     public class LegacyFsReader : Reader
     {
-        string Filename;
+        bool Loaded = false;
+        Types.LegacyImage Image;
+
         public LegacyFsReader(string Filename)
         {
-            this.Filename = Filename;
-        }
+            Image = new Types.LegacyImage(Filename);
 
-        /// <summary>
-        /// Читаем в файловую систему из cpio-файла
-        /// </summary>
-        /// <param name="Dst"></param>
-        public override void ReadToFs(Filesystem Dst)
-        {
-            var Image = new Types.LegacyImage(Filename);
-
-            if(!Image.CorrectHeader)
+            if (!Image.CorrectHeader)
             {
                 Log.Error(0, $"Invalid legacy header in file {Filename}.");
                 return;
@@ -35,16 +28,48 @@ namespace NyaFs.ImageFormat.Fs.Reader
 
             // Выберем метод обработки согласно данным заголовка.
             Log.Ok(1, $"Loaded Legacy image");
-            Log.Write(1, $"Operating System: {GetOS(Image.OperatingSystem)}");
-            Log.Write(1, $"    Architecture: {GetArch(Image.CPUArchitecture)}");
-            Log.Write(1, $"     Compression: {GetCompression(Image.Compression)}");
-            Log.Write(1, $"      Image type: {GetType(Image.Type)}");
+            Log.Write(1, $"  Operating System: {GetOS(Image.OperatingSystem)}");
+            Log.Write(1, $"      Architecture: {GetArch(Image.CPUArchitecture)}");
+            Log.Write(1, $"       Compression: {GetCompression(Image.Compression)}");
+            Log.Write(1, $"         Timestamp: {Image.Timestamp}");
+            Log.Write(1, $" Data Load address: {Image.DataLoadAddress:x08}");
+            Log.Write(1, $"EntryPoint address: {Image.EntryPointAddress:x08}");
 
             if (Image.Type != Types.ImageType.IH_TYPE_RAMDISK)
             {
                 Log.Error(0, $"File {Filename} is not ramdisk file.");
                 return;
             }
+
+            Loaded = true;
+        }
+
+        public override Types.ImageInfo GetImageInfo()
+        {
+            if (Loaded)
+            {
+                var Info = new Types.ImageInfo();
+
+                Info.Architecture = Image.CPUArchitecture;
+                Info.OperatingSystem = Image.OperatingSystem;
+                Info.Name = Image.Name;
+                Info.DataLoadAddress = Image.DataLoadAddress;
+                Info.EntryPointAddress = Image.EntryPointAddress;
+                Info.Type = Image.Type;
+
+                return Info;
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Читаем в файловую систему из cpio-файла
+        /// </summary>
+        /// <param name="Dst"></param>
+        public override void ReadToFs(Filesystem Dst)
+        {
+            if (!Loaded) return;
 
             var Data = GetDecompressedData(Image.Data, Image.Compression);
 
@@ -56,6 +81,11 @@ namespace NyaFs.ImageFormat.Fs.Reader
                 var Reader = new CpioReader(Data);
                 Reader.ReadToFs(Dst);
             }
+            //else if (FilesystemType == Types.FsType.Ext4)
+            //{
+            //    var Reader = new ExtReader(Data);
+            //    Reader.ReadToFs(Dst);
+            //}
             else
                 Log.Error(0, "Unsupported filesystem...");
         }

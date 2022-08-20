@@ -4,13 +4,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="ImageFormat\Fs\Writer\" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CpioLib\CpioLib.csproj" />
     <ProjectReference Include="..\RamFsLib\RamFsLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharpExt4">
+      <HintPath>..\SharpExt4\Debug\SharpExt4.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

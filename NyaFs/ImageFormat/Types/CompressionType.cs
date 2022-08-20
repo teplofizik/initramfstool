@@ -12,7 +12,7 @@ namespace NyaFs.ImageFormat.Types
 	 * New IDs *MUST* be appended at the end of the list and *NEVER*
 	 * inserted for backward compatibility.
 	 */
-	enum CompressionType
+	public enum CompressionType
 	{
 		IH_COMP_NONE = 0,   /*  No	 Compression Used	*/
 		IH_COMP_GZIP,           /* gzip	 Compression Used	*/

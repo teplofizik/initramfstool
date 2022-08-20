@@ -8,7 +8,7 @@ namespace NyaFs.ImageFormat.Fs.Items
     {
         public string Target;
 
-        public SymLink(string Filename, uint User, uint Group, uint Mode, string Target) : base("symlink", Filename, User, Group, Mode)
+        public SymLink(string Filename, uint User, uint Group, uint Mode, string Target) : base(Types.FilesystemItemType.SymLink, Filename, User, Group, Mode)
         {
             this.Target = Target;
         }

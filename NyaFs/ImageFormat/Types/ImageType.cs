@@ -47,7 +47,7 @@ namespace NyaFs.ImageFormat.Types
 	 * inserted for backward compatibility.
 	 */
 
-	enum ImageType
+	public enum ImageType
 	{
 		IH_TYPE_INVALID = 0,    /* Invalid Image		*/
 		IH_TYPE_STANDALONE,     /* Standalone Program		*/
