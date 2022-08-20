@@ -7,11 +7,9 @@ namespace NyaFs.ImageFormat.Fs.Writer
     public class LegacyFsWriter : Writer
     {
         string Filename;
-        Types.ImageInfo Info;
 
-        public LegacyFsWriter(string Filename, Types.ImageInfo Info)
+        public LegacyFsWriter(string Filename)
         {
-            this.Info = Info;
             this.Filename = Filename;
         }
 
@@ -22,7 +20,7 @@ namespace NyaFs.ImageFormat.Fs.Writer
 
             var PackedData = Compressors.Gzip.Compress(CpWriter.RawStream);
 
-            var Image = new Types.LegacyImage(Info, PackedData);
+            var Image = new Types.LegacyImage(Fs.Info, PackedData);
 
             System.IO.File.WriteAllBytes(Filename, Image.getPacket());
         }

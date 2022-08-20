@@ -44,23 +44,17 @@ namespace NyaFs.ImageFormat.Fs.Reader
             Loaded = true;
         }
 
-        public override Types.ImageInfo GetImageInfo()
+        public void UpdateImageInfo(Filesystem Dst)
         {
             if (Loaded)
             {
-                var Info = new Types.ImageInfo();
-
-                Info.Architecture = Image.CPUArchitecture;
-                Info.OperatingSystem = Image.OperatingSystem;
-                Info.Name = Image.Name;
-                Info.DataLoadAddress = Image.DataLoadAddress;
-                Info.EntryPointAddress = Image.EntryPointAddress;
-                Info.Type = Image.Type;
-
-                return Info;
+                Dst.Info.Architecture = Image.CPUArchitecture;
+                Dst.Info.OperatingSystem = Image.OperatingSystem;
+                Dst.Info.Name = Image.Name;
+                Dst.Info.DataLoadAddress = Image.DataLoadAddress;
+                Dst.Info.EntryPointAddress = Image.EntryPointAddress;
+                Dst.Info.Type = Image.Type;
             }
-            else
-                return null;
         }
 
         /// <summary>

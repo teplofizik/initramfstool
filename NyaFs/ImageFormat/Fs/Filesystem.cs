@@ -15,6 +15,7 @@ namespace NyaFs.ImageFormat.Fs
     public class Filesystem
     {
         public Items.Dir Root = new Items.Dir(".", 0, 0, 0x755);
+        public Types.ImageInfo Info = new Types.ImageInfo();
 
         public void Dump()
         {

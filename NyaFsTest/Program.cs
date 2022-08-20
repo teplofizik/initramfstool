@@ -89,11 +89,10 @@ namespace NyaFsTest
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
-            var Info = Importer.GetImageInfo();
 
             Fs.Dump();
 
-            var Exporter = new NyaFs.ImageFormat.Fs.Writer.LegacyFsWriter(Dst, Info);
+            var Exporter = new NyaFs.ImageFormat.Fs.Writer.LegacyFsWriter(Dst);
             Exporter.WriteFs(Fs);
         }
     }

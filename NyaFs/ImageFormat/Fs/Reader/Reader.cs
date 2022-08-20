@@ -15,8 +15,6 @@ namespace NyaFs.ImageFormat.Fs.Reader
 
         }
 
-        public virtual Types.ImageInfo GetImageInfo() => null;
-
         protected void AddFile(Filesystem Dst, Items.File File)
         {
 
