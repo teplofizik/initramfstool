@@ -1,0 +1,31 @@
+00 00 00 01      00 00 00 00 
+FDT_BEGIN_NODE   unit_name=""
+{
+	00 00 00 03   00 00 00 08   00 00 00 00       41 6D 6C 6F 67 69 63 00
+	FDT_PROP      length=8      nameoff=0(model)  value=Amlogic\0      
+	model = "Amlogic";
+	
+	00 00 00 03   00 00 00 10   00 00 00 06               61 78 67 5F 73 34 30 30 5F 76 30 33 73 62 72 00
+	FDT_PROP      length=16     nameoff=6(amlogic-dt-id)  value=axg_s400_v03sbr\0      
+	amlogic-dt-id = "axg_s400_v03sbr";
+	
+	00 00 00 03   00 00 00 0D   00 00 00 14            61 6D 6C 6F 67 69 63 2C 20 61 78 67 00 00 00 00
+	FDT_PROP      length=14     nameoff=20(compatible)  value=amlogic, axg\0\0\0\0
+	compatible = "amlogic, axg";
+	
+	00 00 00 03   00 00 00 04   00 00 00 1F                   00 00 00 01
+	FDT_PROP      length=4     nameoff=31(interrupt-parent)   value=<0x01>
+	interrupt-parent = <0x01>;
+	
+	00 00 00 03   00 00 00 04   00 00 00 30                 00 00 00 02
+	FDT_PROP      length=4      nameoff=48(#address-cells)  value=<0x02>
+	#address-cells = <0x02>;
+	
+	00 00 00 03   00 00 00 04   00 00 00 3F               00 00 00 02
+	FDT_PROP      length=4      nameoff=63(#size-cells)   value=<0x02>
+	#size-cells = <0x02>;
+	
+	00 00 00 01   63 70 75 73   00 00 00 00
+	cpus {
+	
+	

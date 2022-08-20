@@ -19,7 +19,15 @@ namespace Extension.Array
             }
             return 0;
         }
+
+        public static uint MakeSizeAligned(this uint Size, uint Align) => Convert.ToUInt32(MakeSizeAligned((long)Size, (long)Align));
+
         public static long GetAligned(this long Size, long Align)
+        {
+            return Size + Size.MakeSizeAligned(Align);
+        }
+
+        public static uint GetAligned(this uint Size, uint Align)
         {
             return Size + Size.MakeSizeAligned(Align);
         }
@@ -245,6 +253,20 @@ namespace Extension.Array
                     ((uint)Data[Offset + 1] << 16) | // MSB
                     ((uint)Data[Offset + 0] << 24)); // LSB
         }
+
+        // LB HB
+        static public UInt64 ReadUInt64BE(this byte[] Data, long Offset)
+        {
+            return (((ulong)Data[Offset + 7]) |
+                    ((ulong)Data[Offset + 6] << 8) |
+                    ((ulong)Data[Offset + 5] << 16) | // MSB
+                    ((ulong)Data[Offset + 4] << 24) |
+                    ((ulong)Data[Offset + 3] << 32) |
+                    ((ulong)Data[Offset + 2] << 40) |
+                    ((ulong)Data[Offset + 1] << 48) |
+                    ((ulong)Data[Offset + 0] << 56)); // LSB
+        }
+
 
         // LB HB
         static public UInt64 ReadUInt64(this byte[] Data, long Offset)

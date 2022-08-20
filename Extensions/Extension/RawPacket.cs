@@ -236,6 +236,16 @@ namespace Extension.Packet
         }
 
         /// <summary>
+        /// Прочитать uint64 BE
+        /// </summary>
+        /// <param name="Offset"></param>
+        /// <returns></returns>
+        protected ulong ReadUInt64BE(long Offset)
+        {
+            return Raw.ReadUInt64BE(Offset);
+        }
+
+        /// <summary>
         /// Прочитать uint64
         /// </summary>
         /// <param name="Offset"></param>
