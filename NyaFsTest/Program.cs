@@ -6,8 +6,7 @@ namespace NyaFsTest
     {
         static void Main(string[] args)
         {
-            TestImportRamFsCpio();
-            TestImportRamFsCpioExportRamFsCpio();
+            TestImportRamFsCpioExportGzCpio();
         }
 
         static void TestImportNative()
@@ -81,6 +80,21 @@ namespace NyaFsTest
             var Exporter = new NyaFs.ImageFormat.Fs.Writer.CpioWriter(Dst);
             Exporter.WriteFs(Fs);
         }
+        static void TestImportRamFsCpioExportGzCpio()
+        {
+            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\initramfs.bin.SD";
+            var Dst = "ramfs.gz";
+
+            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            Importer.ReadToFs(Fs);
+
+            Fs.Dump();
+
+            var Exporter = new NyaFs.ImageFormat.Fs.Writer.GzCpioWriter(Dst);
+            Exporter.WriteFs(Fs);
+        }
+
         static void TestImportRamFsCpioExportRamFsCpio()
         {
             var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\initramfs.bin.SD";

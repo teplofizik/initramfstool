@@ -6,14 +6,14 @@ namespace NyaFs.ImageFormat.Fs.Writer
 {
     public class CpioWriter : Writer
     {
-        string Filename;
+        string Filename = null;
         byte[] CpioData = null;
 
         CpioLib.Types.CpioArchive Archive;
 
         public CpioWriter()
         {
-            this.Filename = null;
+
         }
 
         public CpioWriter(string Filename)

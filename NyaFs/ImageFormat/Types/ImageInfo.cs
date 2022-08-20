@@ -14,5 +14,19 @@ namespace NyaFs.ImageFormat.Types
 
         public uint DataLoadAddress = 0;
         public uint EntryPointAddress = 0;
+
+        public ImageInfo Clone()
+        {
+            var Res = new ImageInfo();
+
+            Res.Architecture = Architecture;
+            Res.DataLoadAddress = DataLoadAddress;
+            Res.EntryPointAddress = EntryPointAddress;
+            Res.Name = Name;
+            Res.OperatingSystem = OperatingSystem;
+            Res.Type = Type;
+
+            return Res;
+        }
     }
 }

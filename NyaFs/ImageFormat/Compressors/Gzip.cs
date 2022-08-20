@@ -10,6 +10,8 @@ namespace NyaFs.ImageFormat.Compressors
 {
     static class Gzip
     {
+        readonly static byte[] GzipHeader = new byte[] { 0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A };
+
         static UInt32 CalcCrc(byte[] data)
         {
             var crc32 = new Crc(new CrcParameters(32, 0x04c11db7, 0xffffffff, 0xffffffff, true, true));
@@ -32,6 +34,17 @@ namespace NyaFs.ImageFormat.Compressors
 
                 return Res;
             }
+        }
+
+        public static byte[] CompressWithHeader(byte[] Data)
+        {
+            byte[] Compressed = Compress(Data);
+            byte[] Res = new byte[Compressed.Length + GzipHeader.Length];
+
+            Res.WriteArray(0, GzipHeader, GzipHeader.Length);
+            Res.WriteArray(GzipHeader.Length, Compressed, Compressed.Length);
+
+            return Res;
         }
 
         public static byte[] Decompress(byte[] data)

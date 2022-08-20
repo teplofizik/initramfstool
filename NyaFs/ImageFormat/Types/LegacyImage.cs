@@ -9,17 +9,15 @@ namespace NyaFs.ImageFormat.Types
 {
 	public class LegacyImage : RawPacket
     {
-		readonly static byte[] GzipHeader = new byte[] { 0x1F, 0x8B, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A };
-
 		public LegacyImage(byte[] Data) : base(Data) { }
 
 		public LegacyImage(string Filename) : base(System.IO.File.ReadAllBytes(Filename)) { }
 
-		public LegacyImage(ImageInfo Info, byte[] gzPackedData) : base(0x40 + GzipHeader.Length + gzPackedData.Length)
+		public LegacyImage(ImageInfo Info, byte[] gzPackedData) : base(0x40 + gzPackedData.Length)
         {
 			WriteUInt32BE(0, 0x27051956);
 
-			Length = GzipHeader.Length + gzPackedData.Length;
+			Length = gzPackedData.Length;
 			Type = Info.Type;
 			CPUArchitecture = Info.Architecture;
 			OperatingSystem = Info.OperatingSystem;
@@ -27,15 +25,14 @@ namespace NyaFs.ImageFormat.Types
 			EntryPointAddress = Info.EntryPointAddress;
 			Compression = CompressionType.IH_COMP_GZIP;
 
-			WriteArray(0x40, GzipHeader, GzipHeader.Length);
-			WriteArray(0x40 + GzipHeader.Length, gzPackedData, gzPackedData.Length);
+			WriteArray(0x40, gzPackedData, gzPackedData.Length);
 
 			WriteUInt32BE(0x08, Convert.ToUInt32(((DateTimeOffset)DateTimeOffset.Now).ToUnixTimeSeconds()));
 			WriteString(0x20, Info.Name, 0x20);
 			WriteUInt32BE(0x04, 0); 
 			
 			// Calc CRC
-			WriteUInt32BE(0x18, CalcCrc(ReadArray(0x40, Length)));
+			WriteUInt32BE(0x18, CalcCrc(gzPackedData));
 			WriteUInt32BE(0x04, CalcCrc(ReadArray(0, 0x40)));
 		}
 
