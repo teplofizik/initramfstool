@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NyaFs.ImageFormat.Dtb.Types
+namespace NyaFs.FlattenedDeviceTree.Types
 {
     public enum Token
     {

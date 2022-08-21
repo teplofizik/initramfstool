@@ -246,13 +246,23 @@ namespace Extension.Packet
         }
 
         /// <summary>
-        /// Прочитать uint64
+        /// Записать uint64
         /// </summary>
         /// <param name="Offset"></param>
         /// <returns></returns>
         protected long WriteUInt64(long Offset, ulong Value)
         {
             return Raw.WriteUInt64(Offset, Value);
+        }
+
+        /// <summary>
+        /// Записать uint64 be
+        /// </summary>
+        /// <param name="Offset"></param>
+        /// <returns></returns>
+        protected long WriteUInt64BE(long Offset, ulong Value)
+        {
+            return Raw.WriteUInt64BE(Offset, Value);
         }
 
 

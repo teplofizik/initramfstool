@@ -21,16 +21,12 @@ namespace Extension.Array
         }
 
         public static uint MakeSizeAligned(this uint Size, uint Align) => Convert.ToUInt32(MakeSizeAligned((long)Size, (long)Align));
+        public static int MakeSizeAligned(this int Size, int Align) => Convert.ToInt32(MakeSizeAligned((long)Size, (long)Align));
 
-        public static long GetAligned(this long Size, long Align)
-        {
-            return Size + Size.MakeSizeAligned(Align);
-        }
+        public static long GetAligned(this long Size, long Align) => Size + Size.MakeSizeAligned(Align);
 
-        public static uint GetAligned(this uint Size, uint Align)
-        {
-            return Size + Size.MakeSizeAligned(Align);
-        }
+        public static uint GetAligned(this uint Size, uint Align) => Size + Size.MakeSizeAligned(Align);
+        public static int GetAligned(this int Size, int Align) => Size + Size.MakeSizeAligned(Align);
 
         static public void Fill<T>(this T[] Data, T Value)
         {
@@ -292,6 +288,21 @@ namespace Extension.Array
             Data[Offset + 5] = Convert.ToByte((Value >> 40) & 0xFF); // MSB
             Data[Offset + 6] = Convert.ToByte((Value >> 48) & 0xFF); // MSB
             Data[Offset + 7] = Convert.ToByte((Value >> 56) & 0xFF); // MSB
+
+            return Offset + 8;
+        }
+
+        // HB LB
+        static public long WriteUInt64BE(this byte[] Data, long Offset, UInt64 Value)
+        {
+            Data[Offset + 0] = Convert.ToByte((Value >> 56) & 0xFF); // MSB
+            Data[Offset + 1] = Convert.ToByte((Value >> 48) & 0xFF); // MSB
+            Data[Offset + 2] = Convert.ToByte((Value >> 40) & 0xFF); // LSB
+            Data[Offset + 3] = Convert.ToByte((Value >> 32) & 0xFF); // MSB
+            Data[Offset + 4] = Convert.ToByte((Value >> 24) & 0xFF); // MSB
+            Data[Offset + 5] = Convert.ToByte((Value >> 16) & 0xFF); // MSB
+            Data[Offset + 6] = Convert.ToByte((Value >> 8) & 0xFF);  // MSB
+            Data[Offset + 7] = Convert.ToByte((Value >> 0) & 0xFF);  // MSB
 
             return Offset + 8;
         }

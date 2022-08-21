@@ -1,0 +1,12 @@
+fdt@a113d {
+	description = "Flattened Device Tree blob";
+	data = <0xd00dfeed 0xb1d2 0x38 ......>;
+	type = "flat_dt";
+	arch = "arm64";
+	compression = "none";
+
+	hash@1 {
+		value = <0x2d636bb5 0xacf440d4 0x8b3fa819 0x8df03295 0x8dd17386>;
+		algo = "sha1";
+	};
+};

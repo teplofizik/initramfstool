@@ -13,11 +13,11 @@ namespace NyaFs.ImageFormat
         public virtual bool IsProvidedKernel => Kernel != null;
         public virtual bool IsProvidedFs => Fs != null;
 
-        protected DeviceTree  Dtb = null;
+        protected Dtb.DeviceTree  Dtb = null;
         protected Filesystem  Fs = null;
         protected LinuxKernel Kernel = null;
 
-        public virtual DeviceTree GetDTB(int Index = 0) => Dtb;
+        public virtual Dtb.DeviceTree GetDTB(int Index = 0) => Dtb;
 
         public virtual Filesystem GetFilesystem(int Index = 0) => Fs;
 
