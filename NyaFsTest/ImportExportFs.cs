@@ -8,7 +8,7 @@ namespace NyaFsTest
     {
         static void TestImportNative()
         {
-            var Dir = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\a113d\\full";
+            var Dir = "example\\";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.NativeReader(Dir, 0, 0, 0x744, 0x755);
@@ -19,7 +19,7 @@ namespace NyaFsTest
 
         static void TestImportCpio()
         {
-            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\a113d\\s19xp_ramfs.cpio";
+            var Fn = "example.cpio";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.CpioReader(Fn);
@@ -30,7 +30,7 @@ namespace NyaFsTest
 
         static void TestImportRamFsExt4()
         {
-            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\zynq\\initramfs.bin.SD";
+            var Fn = "legacy.bin";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
@@ -41,7 +41,7 @@ namespace NyaFsTest
 
         static void TestImportRamFsCpio()
         {
-            var Fn = "initramfs.bin.SD";
+            var Fn = "legacy.bin";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
@@ -51,7 +51,7 @@ namespace NyaFsTest
         }
         static void TestImportRamFsCpioExportNative()
         {
-            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\initramfs.bin.SD";
+            var Fn = "legacy.bin";
             var Dst = "extracted\\";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
@@ -65,7 +65,7 @@ namespace NyaFsTest
         }
         static void TestImportRamFsCpioExportCpio()
         {
-            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\initramfs.bin.SD";
+            var Fn = "initramfs.bin";
             var Dst = "extracted.cpio";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
@@ -79,8 +79,8 @@ namespace NyaFsTest
         }
         static void TestImportRamFsCpioExportGzCpio()
         {
-            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\initramfs.bin.SD";
-            var Dst = "ramfs.gz";
+            var Fn = "legacy.bin";
+            var Dst = "extracted.gz";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
@@ -94,8 +94,8 @@ namespace NyaFsTest
 
         static void TestImportRamFsCpioExportRamFsCpio()
         {
-            var Fn = "F:\\Проекты\\Асик конфиг\\cpiotools\\InitramfsTool\\bin\\Debug\\netcoreapp3.1\\initramfs.bin.SD";
-            var Dst = "initramfs.bin.SD";
+            var Fn = "legacy.bin";
+            var Dst = "legacy.bin.saved";
 
             var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
             var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
