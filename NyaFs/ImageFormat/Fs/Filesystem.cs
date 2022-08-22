@@ -15,9 +15,19 @@ namespace NyaFs.ImageFormat.Fs
 
     public class Filesystem
     {
+        /// <summary>
+        /// Root filesystem directory
+        /// </summary>
         public Items.Dir Root = new Items.Dir(".", 0, 0, 0x755);
+
+        /// <summary>
+        /// Image information, arch or supported os
+        /// </summary>
         public Types.ImageInfo Info = new Types.ImageInfo();
 
+        /// <summary>
+        /// Is image loaded?
+        /// </summary>
         public bool Loaded => Root.Items.Count > 0;
 
         public void Dump()

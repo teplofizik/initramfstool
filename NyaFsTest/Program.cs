@@ -14,6 +14,7 @@ namespace NyaFsTest
             var B = new NyaFs.Processor.Scripting.ScriptBase();
             B.Add(new NyaFs.Processor.Scripting.Commands.Load());
             B.Add(new NyaFs.Processor.Scripting.Commands.Store());
+            B.Add(new NyaFs.Processor.Scripting.Commands.Set());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Dir());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.File());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Rm());
@@ -28,6 +29,8 @@ namespace NyaFsTest
             var Base = GetBase();
             var Script = new NyaFs.Processor.Scripting.ScriptParser(Base, "test", new string[] {
                 "load initramfs.bin.SD ramfs legacy",
+                "set ramfs os linux",
+                "set ramfs arch arm64",
                 "dir . rwxr-xr-x 0 0",
                 "rm tmp",
                 "file etc/test.txt test.txt rwxr--r-- 0 0",

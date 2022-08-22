@@ -44,7 +44,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                 var Fs = Processor.GetFs();
                 // Проверим наличие загруженной файловой системы
                 if (Fs == null)
-                    return new ScriptStepResult(ScriptStepStatus.Error, "FS not loaded");
+                    return new ScriptStepResult(ScriptStepStatus.Error, "Filesystem is not loaded");
 
                 if (Fs.Exists(Path))
                 {
