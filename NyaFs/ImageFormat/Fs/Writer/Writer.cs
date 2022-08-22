@@ -14,5 +14,10 @@ namespace NyaFs.ImageFormat.Fs.Writer
         public virtual bool HasRawStreamData => false;
 
         public virtual byte[] RawStream => null;
+
+        protected static uint ConvertToUnixTimestamp(DateTime timestamp)
+        {
+            return Convert.ToUInt32(((DateTimeOffset)timestamp).ToUnixTimeSeconds());
+        }
     }
 }

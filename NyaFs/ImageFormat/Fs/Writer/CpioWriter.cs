@@ -57,6 +57,12 @@ namespace NyaFs.ImageFormat.Fs.Writer
                     case Types.FilesystemItemType.Node:
                         Archive.AddNod(I.Filename, I.RMajor, I.RMinor);
                         break;
+                    case Types.FilesystemItemType.Block:
+                        Archive.AddBlock(I.Filename, I.RMajor, I.RMinor);
+                        break;
+                    case Types.FilesystemItemType.Fifo:
+                        Archive.AddFifo(I.Filename, I.RMajor, I.RMinor);
+                        break;
                 }
             }
         }
@@ -66,6 +72,7 @@ namespace NyaFs.ImageFormat.Fs.Writer
             Node.HexMode = Item.Mode;
             Node.UserId = Item.User;
             Node.GroupId = Item.Group;
+            Node.ModificationTime = ConvertToUnixTimestamp(Item.Modified);
         }
 
         public override bool HasRawStreamData => (CpioData != null);

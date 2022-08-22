@@ -41,5 +41,8 @@ namespace NyaFs.ImageFormat.Fs
         public uint Minor = 1;
         public uint RMajor = 0;
         public uint RMinor = 0;
+
+        public DateTime Created = DateTime.UnixEpoch;
+        public DateTime Modified = DateTime.UnixEpoch;
     }
 }

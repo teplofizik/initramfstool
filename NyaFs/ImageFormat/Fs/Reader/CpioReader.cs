@@ -30,11 +30,11 @@ namespace NyaFs.ImageFormat.Fs.Reader
                     ApplyCpioParams(Dst.Root, I);
                 else
                 {
-                    var Parent = Dst.GetParentDir(I.Path);
-                    var Dir = Dst.GetDirectory(Parent);
+                    //var Parent = Dst.GetParentDir();
+                    var Dir = Dst.GetParentDirectory(I.Path);
 
                     if (Dir == null)
-                        throw new InvalidOperationException($"Parent dir {Parent} not found");
+                        throw new InvalidOperationException($"Parent dir for {I.Path} not found");
 
                     switch (I.FileType)
                     {
@@ -71,6 +71,20 @@ namespace NyaFs.ImageFormat.Fs.Reader
                                 //Console.WriteLine($"Added node {I.Path}");
                                 break;
                             }
+                        case CpioLib.Types.CpioModeFileType.C_ISBLK: // Block
+                            {
+                                var Block = new Items.Block(I.Path, I.UserId, I.GroupId, I.HexMode);
+                                ApplyCpioParams(Block, I);
+                                Dir.Items.Add(Block);
+                                break;
+                            }
+                        case CpioLib.Types.CpioModeFileType.C_ISFIFO: // FIFO
+                            {
+                                var Fifo = new Items.Fifo(I.Path, I.UserId, I.GroupId, I.HexMode);
+                                ApplyCpioParams(Fifo, I);
+                                Dir.Items.Add(Fifo);
+                                break;
+                            }
                         default:
                             //Console.WriteLine($"{I} : {I.FileType}");
                             throw new NotImplementedException($"CPIO node type {I.FileType} is not implemented in embedded NyaFs");
@@ -88,6 +102,8 @@ namespace NyaFs.ImageFormat.Fs.Reader
             Item.RMinor = Node.RMinor;
             Item.User = Node.UserId;
             Item.Group = Node.GroupId;
+
+            Item.Modified = ConvertFromUnixTimestamp(Node.ModificationTime);
         }
     }
 }

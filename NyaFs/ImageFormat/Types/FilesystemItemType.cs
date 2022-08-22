@@ -9,6 +9,8 @@ namespace NyaFs.ImageFormat.Types
         File,
         Dir,
         SymLink,
-        Node
+        Node,
+        Block,
+        Fifo
     }
 }

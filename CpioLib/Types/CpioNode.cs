@@ -208,7 +208,17 @@ namespace CpioLib.Types
             }
         }
 
-        public UInt32 ModificationTime => GetAsciiValue(46, 8);
+        public UInt32 ModificationTime
+        {
+            get
+            {
+                return GetAsciiValue(46, 8);
+            }
+            set
+            {
+                SetAsciiValue(46, 8, value);
+            }
+        }
 
         /// <summary>
         /// must be 0 for FIFOs and directories

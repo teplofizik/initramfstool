@@ -5,9 +5,13 @@ using System.Text;
 
 namespace NyaFs.ImageFormat.Dtb
 {
-    class DeviceTree
+    public class DeviceTree
     {
         public FlattenedDeviceTree.FlattenedDeviceTree DevTree = new FlattenedDeviceTree.FlattenedDeviceTree();
 
+        public DeviceTree(FlattenedDeviceTree.FlattenedDeviceTree DevTree)
+        {
+            this.DevTree = DevTree;
+        }
     }
 }

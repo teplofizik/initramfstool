@@ -1,5 +1,4 @@
-﻿using SharpExt4;
-using System;
+﻿using System;
 using System.IO;
 
 namespace NyaFs.ImageFormat.Fs.Reader
@@ -7,14 +6,14 @@ namespace NyaFs.ImageFormat.Fs.Reader
     public class ExtReader : Reader
     {
         string Filename;
-        ExtDisk disk;
+        //ExtDisk disk;
 
         public ExtReader(byte[] data)
         {
-            Filename = "tempextimage.ext4"; ///System.IO.Path.GetTempFileName();
+            //Filename = "tempextimage.ext4"; ///System.IO.Path.GetTempFileName();
 
-            System.IO.File.WriteAllBytes(Filename, data);
-            disk = ExtDisk.Open(Filename);
+            //System.IO.File.WriteAllBytes(Filename, data);
+            //disk = ExtDisk.Open(Filename);
         }
 
         /// <summary>
@@ -23,11 +22,11 @@ namespace NyaFs.ImageFormat.Fs.Reader
         /// <param name="Dst"></param>
         public override void ReadToFs(Filesystem Dst)
         {
-            var fs = ExtFileSystem.Open(disk, disk.Partitions[0]);
+            //var fs = ExtFileSystem.Open(disk, disk.Partitions[0]);
 
-            ProcessDirectory(fs, Dst.Root, ".");
+            //ProcessDirectory(fs, Dst.Root, ".");
         }
-
+        /*
         private byte[] GetFile(ExtFileSystem fs, string Path)
         {
             var file = fs.OpenFile(Path, FileMode.Open, FileAccess.Read);
@@ -74,6 +73,6 @@ namespace NyaFs.ImageFormat.Fs.Reader
         {
             disk.Dispose();
             System.IO.File.Delete(Filename);
-        }
+        }*/
     }
 }

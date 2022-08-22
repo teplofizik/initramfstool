@@ -145,9 +145,20 @@ namespace CpioLib.Types
         {
             Files.Add(new CpioSLink(Filename, ToPath));
         }
+
         public void AddNod(string Filename, uint RMajor, uint RMinor)
         {
             Files.Add(new CpioNod(Filename, RMajor, RMinor));
+        }
+
+        public void AddBlock(string Filename, uint RMajor, uint RMinor)
+        {
+            Files.Add(new CpioBlock(Filename, RMajor, RMinor));
+        }
+
+        public void AddFifo(string Filename, uint RMajor, uint RMinor)
+        {
+            Files.Add(new CpioFifo(Filename, RMajor, RMinor));
         }
 
         public void Clear()

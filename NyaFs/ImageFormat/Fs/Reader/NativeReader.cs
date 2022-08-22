@@ -38,6 +38,10 @@ namespace NyaFs.ImageFormat.Fs.Reader
             {
                 var RelPath = System.IO.Path.GetRelativePath(Dir, D);
                 var CurrentDir = new Items.Dir(RelPath, User, Group, DirMode);
+
+                CurrentDir.Created = System.IO.Directory.GetCreationTime(D);
+                CurrentDir.Modified = System.IO.Directory.GetLastWriteTime(D);
+
                 // Console.WriteLine($"Added dir: {RelPath}");
                 DirItem.Items.Add(CurrentDir);
 
@@ -53,6 +57,8 @@ namespace NyaFs.ImageFormat.Fs.Reader
                 var FilePath = System.IO.Path.GetRelativePath(Dir, F);
                 // Console.WriteLine($"Added file: {FilePath} size {Data.Length}");
                 var File = new Items.File(FilePath, User, Group, FileMode, Data);
+                File.Created = System.IO.File.GetCreationTime(F);
+                File.Modified = System.IO.File.GetLastWriteTime(F);
 
                 DirItem.Items.Add(File);
             }

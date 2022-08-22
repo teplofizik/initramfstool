@@ -12,6 +12,7 @@ namespace NyaFs.ImageFormat.Fs
     // legacy gzipped ext4
     // fit => gzipped cpio
     // fit => gzipped ext4
+
     public class Filesystem
     {
         public Items.Dir Root = new Items.Dir(".", 0, 0, 0x755);
@@ -34,7 +35,7 @@ namespace NyaFs.ImageFormat.Fs
             }
         }
 
-        public string GetParentDir(string Path)
+        private string GetParentDirPath(string Path)
         {
             int Pos = Path.LastIndexOf('/');
             if (Pos >= 0)
@@ -48,6 +49,57 @@ namespace NyaFs.ImageFormat.Fs
             var Element = GetElement(Path);
 
             return Element as Items.Dir;
+        }
+
+        public Items.Dir GetParentDirectory(string Path)
+        {
+            if (Path == ".") return null;
+            if (Path.Length == 0)
+                throw new ArgumentException($"{Path} is empty");
+
+            var Parent = GetParentDirPath(Path);
+            return GetElement(Parent) as Items.Dir;
+        }
+
+        public bool Exists(string Path)
+        {
+            if (Path == ".") return true;
+            if (Path.Length == 0)
+                throw new ArgumentException($"{Path} is empty");
+
+            if (Path[0] == '/') Path = Path.Substring(1);
+
+            var Parts = Path.Split("/");
+
+            Items.Dir Base = Root;
+            string Rel = null;
+            foreach (var P in Parts)
+            {
+                Rel = (Rel == null) ? P : Rel + "/" + P;
+
+                bool Found = false;
+                foreach (var I in Base.Items)
+                {
+                    if (I.Filename == Rel)
+                    {
+                        if (Rel == Path)
+                            return true;
+
+                        if (I.ItemType == Types.FilesystemItemType.Dir)
+                        {
+                            Base = I as Items.Dir;
+                            Found = true;
+                            break;
+                        }
+                        else
+                            return false;
+                    }
+                }
+                if (!Found)
+                    return false;
+            }
+
+            return false;
         }
 
         public FilesystemItem GetElement(string Path)
@@ -91,9 +143,17 @@ namespace NyaFs.ImageFormat.Fs
             throw new ArgumentException($"{Path} is not found in filesystem");
         }
 
-      //  public FilesystemItem Get(string Path)
-      //  {
+        internal void Delete(string Path)
+        {
+            var Element = GetElement(Path);
+            if(Element == null)
+                throw new ArgumentException($"{Path} is not found in filesystem");
 
-      //  }
+            var Parent = GetParentDirectory(Path);
+            if (Parent == null)
+                throw new ArgumentException($"Parent dir for {Path} is not found in filesystem");
+
+            Parent.Items.RemoveAll(FI => FI.Filename == Path);
+        }
     }
 }

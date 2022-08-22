@@ -4,7 +4,8 @@ using System.Text;
 
 namespace NyaFs.ImageFormat.Kernel
 {
-    class LinuxKernel
+    public class LinuxKernel
     {
+        public byte[] Image = null;
     }
 }
