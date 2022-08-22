@@ -74,6 +74,8 @@ namespace NyaFs.ImageFormat.Fs.Reader
             {
                 var Reader = new CpioReader(Data);
                 Reader.ReadToFs(Dst);
+
+                UpdateImageInfo(Dst);
             }
             //else if (FilesystemType == Types.FsType.Ext4)
             //{

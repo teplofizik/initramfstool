@@ -15,18 +15,23 @@ namespace NyaFs.ImageFormat.Fs.Writer
 
         public override void WriteFs(Filesystem Fs)
         {
-            var CpWriter = new CpioWriter();
-            CpWriter.WriteFs(Fs);
+            if (IsImageInfoCorrect(Fs.Info))
+            {
+                var CpWriter = new CpioWriter();
+                CpWriter.WriteFs(Fs);
 
-            var PackedData = Compressors.Gzip.CompressWithHeader(CpWriter.RawStream);
+                var PackedData = Compressors.Gzip.CompressWithHeader(CpWriter.RawStream);
 
-            var Info = Fs.Info.Clone();
-            Info.Type = Types.ImageType.IH_TYPE_RAMDISK;
+                var Info = Fs.Info.Clone();
+                Info.Type = Types.ImageType.IH_TYPE_RAMDISK;
 
-            var Image = new Types.LegacyImage(Info, PackedData);
-            System.IO.File.WriteAllBytes(Filename, Image.getPacket());
+                var Image = new Types.LegacyImage(Info, PackedData);
+                System.IO.File.WriteAllBytes(Filename, Image.getPacket());
+            }
         }
-        
+
+        public override bool CheckFilesystem(Filesystem Fs) => base.CheckFilesystem(Fs) && IsImageInfoCorrect(Fs.Info);
+
         bool IsImageInfoCorrect(Types.ImageInfo Info)
         {
             if(Info.Architecture == Types.CPU.IH_ARCH_INVALID)
@@ -43,6 +48,5 @@ namespace NyaFs.ImageFormat.Fs.Writer
 
             return true;
         }
-
     }
 }

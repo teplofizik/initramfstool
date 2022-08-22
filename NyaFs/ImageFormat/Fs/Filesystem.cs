@@ -18,6 +18,8 @@ namespace NyaFs.ImageFormat.Fs
         public Items.Dir Root = new Items.Dir(".", 0, 0, 0x755);
         public Types.ImageInfo Info = new Types.ImageInfo();
 
+        public bool Loaded => Root.Items.Count > 0;
+
         public void Dump()
         {
             DumpDir(Root);

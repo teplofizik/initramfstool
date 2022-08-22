@@ -19,5 +19,7 @@ namespace NyaFs.ImageFormat.Fs.Writer
         {
             return Convert.ToUInt32(((DateTimeOffset)timestamp).ToUnixTimeSeconds());
         }
+
+        public virtual bool CheckFilesystem(Filesystem Fs) => (Fs != null);
     }
 }

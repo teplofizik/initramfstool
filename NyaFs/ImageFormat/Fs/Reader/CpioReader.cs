@@ -13,6 +13,7 @@ namespace NyaFs.ImageFormat.Fs.Reader
         {
             Archive = CpioParser.Load(Filename);
         }
+
         public CpioReader(byte[] Data)
         {
             Archive = CpioParser.Load(Data);

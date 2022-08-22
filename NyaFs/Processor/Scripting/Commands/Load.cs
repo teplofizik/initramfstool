@@ -9,26 +9,38 @@ namespace NyaFs.Processor.Scripting.Commands
     {
         public Load() : base("load")
         {
+
             AddConfig(new ScriptArgsConfig(0, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
-                    new ImageTypeScriptArgsParam(),
-                    new ImageFormatScriptArgsParam()
+                    new Params.EnumScriptArgsParam("type", new string[] { "kernel" }),
+                    new Params.EnumScriptArgsParam("format", new string[] { "gz", "legacy"/*, "fit"*/ }),
                 }));
 
             AddConfig(new ScriptArgsConfig(1, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
-                    new ImageTypeDtScriptArgsParam()
+                    new Params.EnumScriptArgsParam("type", new string[] { "ramfs" }),
+                    new Params.EnumScriptArgsParam("format", new string[] { "cpio", "gz", "legacy"/*, "fit"*/ }),
                 }));
+
+            AddConfig(new ScriptArgsConfig(2, new ScriptArgsParam[] {
+                    new Params.FsPathScriptArgsParam(),
+                    new Params.EnumScriptArgsParam("type", new string[] { "devtree"}),
+                    new Params.EnumScriptArgsParam("format", new string[] { "dtb"/*, "fit"*/ }),
+                }));
+
+            /*
+            AddConfig(new ScriptArgsConfig(3, new ScriptArgsParam[] {
+                    new Params.FsPathScriptArgsParam(),
+                    new Params.EnumScriptArgsParam("type", new string[] { "all" }),
+                    new Params.EnumScriptArgsParam("format", new string[] { "fit" }),
+                }));*/
         }
 
         public override ScriptStep Get(ScriptArgs Args)
         {
             var A = Args.RawArgs;
 
-            if(Args.ArgConfig == 0)
-                return new LoadScriptStep(A[0], A[1], A[2]);
-            else
-                return new LoadScriptStep(A[0], A[1], "dtb");
+            return new LoadScriptStep(A[0], A[1], A[2]);
         }
 
         public class LoadScriptStep : ScriptStep
@@ -63,14 +75,26 @@ namespace NyaFs.Processor.Scripting.Commands
 
             private ScriptStepResult ReadDtb(ImageProcessor Processor)
             {
-                var Dtb = new FlattenedDeviceTree.Reader.FDTReader(Path).Read();
-                Processor.SetDeviceTree(new DeviceTree(Dtb));
-
-                return new ScriptStepResult(ScriptStepStatus.Ok, $"Dtb is loaded!");
+                switch (Format)
+                {
+                    case "dtb":
+                        {
+                            var Dtb = new FlattenedDeviceTree.Reader.FDTReader(Path).Read();
+                            Processor.SetDeviceTree(new DeviceTree(Dtb));
+                            return new ScriptStepResult(ScriptStepStatus.Ok, $"Dtb is loaded!");
+                        }
+                    case "fit":
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Fit format is not supported now!");
+                    case "dts":
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Dts is not supported now!");
+                    default:
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown devtree format!");
+                }
             }
 
             private ScriptStepResult ReadFs(ImageProcessor Processor)
             {
+                var OldLoaded = Processor.GetFs()?.Loaded ?? false;
                 var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
                 switch (Format)
                 {
@@ -78,22 +102,46 @@ namespace NyaFs.Processor.Scripting.Commands
                         {
                             var Importer = new NyaFs.ImageFormat.Fs.Reader.CpioReader(Path);
                             Importer.ReadToFs(Fs);
-                            Processor.SetFs(Fs);
-                            return new ScriptStepResult(ScriptStepStatus.Ok, $"Cpio is loaded as filesystem!");
+                            if (Fs.Loaded)
+                            {
+                                Processor.SetFs(Fs);
+                                if(OldLoaded)
+                                    return new ScriptStepResult(ScriptStepStatus.Warning, $"Cpio is loaded as filesystem! Old filesystem is replaced by this.");
+                                else
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"Cpio is loaded as filesystem!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"Cpio is not loaded!");
                         }
                     case "gz":
                         {
                             var Importer = new NyaFs.ImageFormat.Fs.Reader.gzReader(Path);
                             Importer.ReadToFs(Fs);
-                            Processor.SetFs(Fs);
-                            return new ScriptStepResult(ScriptStepStatus.Ok, $"gz file is loaded as filesystem!");
+                            if (Fs.Loaded)
+                            {
+                                Processor.SetFs(Fs);
+                                if (OldLoaded)
+                                    return new ScriptStepResult(ScriptStepStatus.Warning, $"Cpio is loaded as filesystem! Old filesystem is replaced by this.");
+                                else
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"gz file is loaded as filesystem!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"gz file is not loaded!");
                         }
                     case "legacy":
                         {
                             var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Path);
                             Importer.ReadToFs(Fs);
-                            Processor.SetFs(Fs);
-                            return new ScriptStepResult(ScriptStepStatus.Ok, $"legacy file is loaded as filesystem!");
+                            if (Fs.Loaded)
+                            {
+                                Processor.SetFs(Fs);
+                                if (OldLoaded)
+                                    return new ScriptStepResult(ScriptStepStatus.Warning, $"Cpio is loaded as filesystem! Old filesystem is replaced by this.");
+                                else
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"legacy file is loaded as filesystem!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"legacy file is not loaded!");
                         }
                     case "fit":
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Fit format is not supported now!");
@@ -101,27 +149,6 @@ namespace NyaFs.Processor.Scripting.Commands
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown fs format!");
                 }
             }
-        }
-
-        class ImageTypeDtScriptArgsParam : ScriptArgsParam
-        {
-            public ImageTypeDtScriptArgsParam() : base("imagetype") { }
-
-            public override bool CheckParam(string Arg) => (Arg == "devtree");
-        }
-
-        class ImageTypeScriptArgsParam : ScriptArgsParam
-        {
-            public ImageTypeScriptArgsParam() : base("imagetype") { }
-
-            public override bool CheckParam(string Arg) => (Arg == "kernel") || (Arg == "ramfs");
-        }
-
-        class ImageFormatScriptArgsParam : ScriptArgsParam
-        {
-            public ImageFormatScriptArgsParam() : base("imageformat") { }
-
-            public override bool CheckParam(string Arg) => (Arg == "cpio") || (Arg == "gz") || (Arg == "legacy") || (Arg == "fit");
         }
     }
 }

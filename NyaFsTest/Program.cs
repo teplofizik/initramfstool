@@ -13,6 +13,7 @@ namespace NyaFsTest
         {
             var B = new NyaFs.Processor.Scripting.ScriptBase();
             B.Add(new NyaFs.Processor.Scripting.Commands.Load());
+            B.Add(new NyaFs.Processor.Scripting.Commands.Store());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Dir());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.File());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Rm());
@@ -29,7 +30,8 @@ namespace NyaFsTest
                 "load initramfs.bin.SD ramfs legacy",
                 "dir . rwxr-xr-x 0 0",
                 "rm tmp",
-                "file etc/test.txt test.txt rwxr--r-- 0 0"
+                "file etc/test.txt test.txt rwxr--r-- 0 0",
+                "store initramfs.bin.SD.modified ramfs legacy"
             }).Script;
 
             if (!Script.HasErrors)

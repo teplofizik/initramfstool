@@ -5,7 +5,7 @@ namespace NyaFs.ImageFormat.Fs.Reader
 {
     public class ExtReader : Reader
     {
-        string Filename;
+        //string Filename;
         //ExtDisk disk;
 
         public ExtReader(byte[] data)
