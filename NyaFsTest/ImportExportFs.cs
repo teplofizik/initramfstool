@@ -4,9 +4,9 @@ using System.Text;
 
 namespace NyaFsTest
 {
-    static class ImportExportText
+    static class ImportExportFs
     {
-        static void TestImportNative()
+        public static void TestImportNative()
         {
             var Dir = "example\\";
 
@@ -17,7 +17,7 @@ namespace NyaFsTest
             Fs.Dump();
         }
 
-        static void TestImportCpio()
+        public static void TestImportCpio()
         {
             var Fn = "example.cpio";
 
@@ -28,7 +28,7 @@ namespace NyaFsTest
             Fs.Dump();
         }
 
-        static void TestImportRamFsExt4()
+        public static void TestImportRamFsExt4()
         {
             var Fn = "legacy.bin";
 
@@ -39,7 +39,7 @@ namespace NyaFsTest
             Fs.Dump();
         }
 
-        static void TestImportRamFsCpio()
+        public static void TestImportRamFsCpio()
         {
             var Fn = "legacy.bin";
 
@@ -49,7 +49,7 @@ namespace NyaFsTest
 
             Fs.Dump();
         }
-        static void TestImportRamFsCpioExportNative()
+        public static void TestImportRamFsCpioExportNative()
         {
             var Fn = "legacy.bin";
             var Dst = "extracted\\";
@@ -63,7 +63,7 @@ namespace NyaFsTest
             var Exporter = new NyaFs.ImageFormat.Fs.Writer.NativeWriter(Dst);
             Exporter.WriteFs(Fs);
         }
-        static void TestImportRamFsCpioExportCpio()
+        public static void TestImportRamFsCpioExportCpio()
         {
             var Fn = "initramfs.bin";
             var Dst = "extracted.cpio";
@@ -77,7 +77,7 @@ namespace NyaFsTest
             var Exporter = new NyaFs.ImageFormat.Fs.Writer.CpioWriter(Dst);
             Exporter.WriteFs(Fs);
         }
-        static void TestImportRamFsCpioExportGzCpio()
+        public static void TestImportRamFsCpioExportGzCpio()
         {
             var Fn = "legacy.bin";
             var Dst = "extracted.gz";
@@ -92,7 +92,7 @@ namespace NyaFsTest
             Exporter.WriteFs(Fs);
         }
 
-        static void TestImportRamFsCpioExportRamFsCpio()
+        public static void TestImportRamFsCpioExportRamFsCpio()
         {
             var Fn = "legacy.bin";
             var Dst = "legacy.bin.saved";
@@ -105,6 +105,17 @@ namespace NyaFsTest
 
             var Exporter = new NyaFs.ImageFormat.Fs.Writer.LegacyFsWriter(Dst);
             Exporter.WriteFs(Fs);
+        }
+
+        public static void TestImportFit()
+        {
+            var Fn = "test.fit";
+            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
+
+            var Importer = new NyaFs.ImageFormat.Fs.Reader.FitReader(Fn);
+            Importer.ReadToFs(Fs);
+
+            Fs.Dump();
         }
     }
 }

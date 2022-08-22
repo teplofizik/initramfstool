@@ -23,7 +23,7 @@ namespace NyaFs.ImageFormat.Fs.Writer
                 var PackedData = Compressors.Gzip.CompressWithHeader(CpWriter.RawStream);
 
                 var Info = Fs.Info.Clone();
-                Info.Type = Types.ImageType.IH_TYPE_RAMDISK;
+                Info.Type = ImageFormat.Types.ImageType.IH_TYPE_RAMDISK;
 
                 var Image = new Types.LegacyImage(Info, PackedData);
                 System.IO.File.WriteAllBytes(Filename, Image.getPacket());

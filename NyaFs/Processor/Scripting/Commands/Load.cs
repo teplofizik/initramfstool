@@ -19,7 +19,7 @@ namespace NyaFs.Processor.Scripting.Commands
             AddConfig(new ScriptArgsConfig(1, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
                     new Params.EnumScriptArgsParam("type", new string[] { "ramfs" }),
-                    new Params.EnumScriptArgsParam("format", new string[] { "cpio", "gz", "legacy"/*, "fit"*/ }),
+                    new Params.EnumScriptArgsParam("format", new string[] { "cpio", "gz", "legacy", "fit" }),
                 }));
 
             AddConfig(new ScriptArgsConfig(2, new ScriptArgsParam[] {
@@ -144,7 +144,20 @@ namespace NyaFs.Processor.Scripting.Commands
                                 return new ScriptStepResult(ScriptStepStatus.Error, $"legacy file is not loaded!");
                         }
                     case "fit":
-                        return new ScriptStepResult(ScriptStepStatus.Error, $"Fit format is not supported now!");
+                        {
+                            var Importer = new NyaFs.ImageFormat.Fs.Reader.FitReader(Path);
+                            Importer.ReadToFs(Fs);
+                            if (Fs.Loaded)
+                            {
+                                Processor.SetFs(Fs);
+                                if (OldLoaded)
+                                    return new ScriptStepResult(ScriptStepStatus.Warning, $"Fit is loaded as filesystem! Old filesystem is replaced by this.");
+                                else
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"legacy file is loaded as filesystem!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"legacy file is not loaded!");
+                        }
                     default:
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown fs format!");
                 }

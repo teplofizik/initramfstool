@@ -28,7 +28,9 @@ namespace NyaFsTest
 
             var Base = GetBase();
             var Script = new NyaFs.Processor.Scripting.ScriptParser(Base, "test", new string[] {
-                "load initramfs.bin.SD ramfs legacy",
+               // "load initramfs.bin.SD ramfs legacy",
+                "load test.fit ramfs fit",
+                "set ramfs name TestImageARM64",
                 "set ramfs os linux",
                 "set ramfs arch arm64",
                 "dir . rwxr-xr-x 0 0",

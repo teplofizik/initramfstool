@@ -35,7 +35,7 @@ namespace NyaFs.ImageFormat.Fs.Reader
             Log.Write(1, $" Data Load address: {Image.DataLoadAddress:x08}");
             Log.Write(1, $"EntryPoint address: {Image.EntryPointAddress:x08}");
 
-            if (Image.Type != Types.ImageType.IH_TYPE_RAMDISK)
+            if (Image.Type != ImageFormat.Types.ImageType.IH_TYPE_RAMDISK)
             {
                 Log.Error(0, $"File {Filename} is not ramdisk file.");
                 return;
@@ -68,7 +68,7 @@ namespace NyaFs.ImageFormat.Fs.Reader
             var Data = GetDecompressedData(Image.Data, Image.Compression);
 
             var FilesystemType = FilesystemDetector.DetectFs(Data);
-            Log.Write(1, $"      Filesystem: {GetFilesystemType(FilesystemType)}");
+            Log.Write(1, $"      Filesystem: {FilesystemDetector.GetFilesystemType(FilesystemType)}");
 
             if (FilesystemType == Types.FsType.Cpio)
             {
@@ -84,16 +84,6 @@ namespace NyaFs.ImageFormat.Fs.Reader
             //}
             else
                 Log.Error(0, "Unsupported filesystem...");
-        }
-
-        string GetFilesystemType(Types.FsType Type)
-        {
-            switch(Type)
-            {
-                case Types.FsType.Cpio: return "CPIO (ASCII)";
-                case Types.FsType.Ext4: return "Ext4";
-                default: return "Unknown";
-            }
         }
 
         byte[] GetDecompressedData(byte[] Source, Types.CompressionType Compression)
@@ -160,10 +150,10 @@ namespace NyaFs.ImageFormat.Fs.Reader
         {
             switch (Type)
             {
-                case Types.ImageType.IH_TYPE_KERNEL: return "kernel";
-                case Types.ImageType.IH_TYPE_MULTI: return "multi";
-                case Types.ImageType.IH_TYPE_SCRIPT: return "script";
-                case Types.ImageType.IH_TYPE_RAMDISK: return "ramdisk";
+                case ImageFormat.Types.ImageType.IH_TYPE_KERNEL: return "kernel";
+                case ImageFormat.Types.ImageType.IH_TYPE_MULTI: return "multi";
+                case ImageFormat.Types.ImageType.IH_TYPE_SCRIPT: return "script";
+                case ImageFormat.Types.ImageType.IH_TYPE_RAMDISK: return "ramdisk";
                 default: return $"{Type}";
             }
         }

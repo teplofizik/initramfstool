@@ -28,7 +28,7 @@ namespace NyaFs.ImageFormat.Types
 			WriteArray(0x40, gzPackedData, gzPackedData.Length);
 
 			WriteUInt32BE(0x08, Convert.ToUInt32(((DateTimeOffset)DateTimeOffset.Now).ToUnixTimeSeconds()));
-			WriteString(0x20, Info.Name, 0x20);
+			WriteString(0x20, Info.Name ?? "Unknown name", 0x20);
 			WriteUInt32BE(0x04, 0); 
 			
 			// Calc CRC

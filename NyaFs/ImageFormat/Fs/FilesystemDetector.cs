@@ -32,5 +32,16 @@ namespace NyaFs.ImageFormat.Fs
 
             return Types.FsType.Unknown;
         }
+
+        public static string GetFilesystemType(Types.FsType Type)
+        {
+            switch (Type)
+            {
+                case Types.FsType.Cpio: return "CPIO (ASCII)";
+                case Types.FsType.Ext4: return "Ext4";
+                default: return "Unknown";
+            }
+        }
     }
+
 }
