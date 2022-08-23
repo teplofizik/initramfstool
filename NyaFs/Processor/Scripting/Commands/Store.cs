@@ -102,19 +102,19 @@ namespace NyaFs.Processor.Scripting.Commands
                 {
                     case "cpio":
                         {
-                            var Exporter = new NyaFs.ImageFormat.Fs.Writer.CpioWriter(Path);
+                            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.CpioWriter(Path);
                             Exporter.WriteFs(Fs);
                             return new ScriptStepResult(ScriptStepStatus.Ok, $"Filesystem is stored to file {Path} as cpio stream!");
                         }
                     case "gz":
                         {
-                            var Exporter = new NyaFs.ImageFormat.Fs.Writer.GzCpioWriter(Path);
+                            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.GzCpioWriter(Path);
                             Exporter.WriteFs(Fs);
                             return new ScriptStepResult(ScriptStepStatus.Ok, $"Filesystem is stored to file {Path} as gzipped cpio stream!");
                         }
                     case "legacy":
                         {
-                            var Exporter = new NyaFs.ImageFormat.Fs.Writer.LegacyFsWriter(Path);
+                            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.LegacyFsWriter(Path);
                             if (Exporter.CheckFilesystem(Fs))
                             {
                                 Exporter.WriteFs(Fs);

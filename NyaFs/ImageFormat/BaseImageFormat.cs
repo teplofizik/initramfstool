@@ -1,6 +1,6 @@
-﻿using NyaFs.ImageFormat.Dtb;
-using NyaFs.ImageFormat.Fs;
-using NyaFs.ImageFormat.Kernel;
+﻿using NyaFs.ImageFormat.Elements.Dtb;
+using NyaFs.ImageFormat.Elements.Fs;
+using NyaFs.ImageFormat.Elements.Kernel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,11 +13,11 @@ namespace NyaFs.ImageFormat
         public virtual bool IsProvidedKernel => Kernel != null;
         public virtual bool IsProvidedFs => Fs != null;
 
-        protected Dtb.DeviceTree  Dtb = null;
+        protected DeviceTree  Dtb = null;
         protected Filesystem  Fs = null;
         protected LinuxKernel Kernel = null;
 
-        public virtual Dtb.DeviceTree GetDTB(int Index = 0) => Dtb;
+        public virtual DeviceTree GetDTB(int Index = 0) => Dtb;
 
         public virtual Filesystem GetFilesystem(int Index = 0) => Fs;
 

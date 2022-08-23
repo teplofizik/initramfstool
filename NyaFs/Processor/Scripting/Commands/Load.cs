@@ -1,4 +1,4 @@
-﻿using NyaFs.ImageFormat.Dtb;
+﻿using NyaFs.ImageFormat.Elements.Dtb;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,11 +9,10 @@ namespace NyaFs.Processor.Scripting.Commands
     {
         public Load() : base("load")
         {
-
             AddConfig(new ScriptArgsConfig(0, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
                     new Params.EnumScriptArgsParam("type", new string[] { "kernel" }),
-                    new Params.EnumScriptArgsParam("format", new string[] { "gz", "legacy"/*, "fit"*/ }),
+                    new Params.EnumScriptArgsParam("format", new string[] { "gz", /*"legacy",*/ "fit" }),
                 }));
 
             AddConfig(new ScriptArgsConfig(1, new ScriptArgsParam[] {
@@ -25,7 +24,7 @@ namespace NyaFs.Processor.Scripting.Commands
             AddConfig(new ScriptArgsConfig(2, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
                     new Params.EnumScriptArgsParam("type", new string[] { "devtree"}),
-                    new Params.EnumScriptArgsParam("format", new string[] { "dtb"/*, "fit"*/ }),
+                    new Params.EnumScriptArgsParam("format", new string[] { "dtb", "fit" }),
                 }));
 
             /*
@@ -62,29 +61,77 @@ namespace NyaFs.Processor.Scripting.Commands
                 if (!System.IO.File.Exists(Path))
                     return new ScriptStepResult(ScriptStepStatus.Error, $"{Path} not found!");
 
-                switch(Type)
+                switch (Type)
                 {
-                    case "ramfs": return ReadFs(Processor);
+                    case "ramfs":   return ReadFs(Processor);
                     case "devtree": return ReadDtb(Processor);
-                    case "kernel":
-                        return new ScriptStepResult(ScriptStepStatus.Error, $"Kernel loading is not supported now!");
+                    case "kernel":  return ReadKernel(Processor);
                     default:
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown image type!");
                 }
             }
 
+            private ScriptStepResult ReadKernel(ImageProcessor Processor)
+            {
+                var OldLoaded = Processor.GetKernel()?.Loaded ?? false;
+                var Kernel = new ImageFormat.Elements.Kernel.LinuxKernel();
+                switch (Format)
+                {
+                    case "gz":
+                        {
+                            var Importer = new ImageFormat.Elements.Kernel.Reader.GzReader(Path);
+                            Importer.ReadToKernel(Kernel);
+                            if (Kernel.Loaded)
+                            {
+                                Processor.SetKernel(Kernel);
+                                if (OldLoaded)
+                                    return new ScriptStepResult(ScriptStepStatus.Warning, $"Gzipped image is loaded as kernel! Old kernel is replaced by this.");
+                                else
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"Gzipped image is loaded as kernel!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"gz file is not loaded!");
+                        }
+                    case "fit":
+                        {
+                            var Importer = new ImageFormat.Elements.Kernel.Reader.FitReader(Path);
+                            Importer.ReadToKernel(Kernel);
+                            if (Kernel.Loaded)
+                            {
+                                Processor.SetKernel(Kernel);
+                                if (OldLoaded)
+                                    return new ScriptStepResult(ScriptStepStatus.Warning, $"Kernel is loaded from FIT image! Old kernel is replaced by this.");
+                                else
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"Kernel is loaded from FIT image!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"gz file is not loaded!");
+                        }
+                    default:
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown kernel format!");
+                }
+            }
+
             private ScriptStepResult ReadDtb(ImageProcessor Processor)
             {
+                var OldLoaded = Processor.GetDevTree()?.Loaded ?? false;
+                var Dtb = new DeviceTree();
                 switch (Format)
                 {
                     case "dtb":
                         {
-                            var Dtb = new FlattenedDeviceTree.Reader.FDTReader(Path).Read();
-                            Processor.SetDeviceTree(new DeviceTree(Dtb));
+                            var Importer = new ImageFormat.Elements.Dtb.Reader.DtbReader(Path);
+                            Importer.ReadToDevTree(Dtb);
+                            Processor.SetDeviceTree(Dtb);
                             return new ScriptStepResult(ScriptStepStatus.Ok, $"Dtb is loaded!");
                         }
                     case "fit":
-                        return new ScriptStepResult(ScriptStepStatus.Error, $"Fit format is not supported now!");
+                        {
+                            var Importer = new ImageFormat.Elements.Dtb.Reader.FitReader(Path);
+                            Importer.ReadToDevTree(Dtb);
+                            Processor.SetDeviceTree(Dtb);
+                            return new ScriptStepResult(ScriptStepStatus.Ok, $"Devtree is loaded from Fit image!");
+                        }
                     case "dts":
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Dts is not supported now!");
                     default:
@@ -95,12 +142,12 @@ namespace NyaFs.Processor.Scripting.Commands
             private ScriptStepResult ReadFs(ImageProcessor Processor)
             {
                 var OldLoaded = Processor.GetFs()?.Loaded ?? false;
-                var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
+                var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
                 switch (Format)
                 {
                     case "cpio":
                         {
-                            var Importer = new NyaFs.ImageFormat.Fs.Reader.CpioReader(Path);
+                            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.CpioReader(Path);
                             Importer.ReadToFs(Fs);
                             if (Fs.Loaded)
                             {
@@ -115,7 +162,7 @@ namespace NyaFs.Processor.Scripting.Commands
                         }
                     case "gz":
                         {
-                            var Importer = new NyaFs.ImageFormat.Fs.Reader.gzReader(Path);
+                            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.GzReader(Path);
                             Importer.ReadToFs(Fs);
                             if (Fs.Loaded)
                             {
@@ -130,7 +177,7 @@ namespace NyaFs.Processor.Scripting.Commands
                         }
                     case "legacy":
                         {
-                            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Path);
+                            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Path);
                             Importer.ReadToFs(Fs);
                             if (Fs.Loaded)
                             {
@@ -145,7 +192,7 @@ namespace NyaFs.Processor.Scripting.Commands
                         }
                     case "fit":
                         {
-                            var Importer = new NyaFs.ImageFormat.Fs.Reader.FitReader(Path);
+                            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.FitReader(Path);
                             Importer.ReadToFs(Fs);
                             if (Fs.Loaded)
                             {
@@ -153,7 +200,7 @@ namespace NyaFs.Processor.Scripting.Commands
                                 if (OldLoaded)
                                     return new ScriptStepResult(ScriptStepStatus.Warning, $"Fit is loaded as filesystem! Old filesystem is replaced by this.");
                                 else
-                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"legacy file is loaded as filesystem!");
+                                    return new ScriptStepResult(ScriptStepStatus.Ok, $"Filesystem is loaded from FIT image!");
                             }
                             else
                                 return new ScriptStepResult(ScriptStepStatus.Error, $"legacy file is not loaded!");

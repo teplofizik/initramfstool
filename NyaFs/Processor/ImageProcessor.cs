@@ -1,6 +1,6 @@
-﻿using NyaFs.ImageFormat.Dtb;
-using NyaFs.ImageFormat.Fs;
-using NyaFs.ImageFormat.Kernel;
+﻿using NyaFs.ImageFormat.Elements.Dtb;
+using NyaFs.ImageFormat.Elements.Fs;
+using NyaFs.ImageFormat.Elements.Kernel;
 using System;
 using System.Collections.Generic;
 using System.Text;

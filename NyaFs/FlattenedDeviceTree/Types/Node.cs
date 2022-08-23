@@ -27,6 +27,17 @@ namespace NyaFs.FlattenedDeviceTree.Types
             return $"NODE {Name} P:{Properties.Count} N:{Nodes.Count}";
         }
 
+        public Node GetNode(string Name)
+        {
+            foreach(var N in Nodes)
+            {
+                if (N.Name == Name)
+                    return N;
+            }
+
+            return null;
+        }
+
         public byte[] GetValue(string PropertyName)
         {
             foreach(var P in Properties)

@@ -30,6 +30,8 @@ namespace NyaFsTest
             var Script = new NyaFs.Processor.Scripting.ScriptParser(Base, "test", new string[] {
                // "load initramfs.bin.SD ramfs legacy",
                 "load test.fit ramfs fit",
+                "load test.fit devtree fit",
+                "load test.fit kernel fit",
                 "set ramfs name TestImageARM64",
                 "set ramfs os linux",
                 "set ramfs arch arm64",

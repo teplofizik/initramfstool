@@ -10,8 +10,8 @@ namespace NyaFsTest
         {
             var Dir = "example\\";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.NativeReader(Dir, 0, 0, 0x744, 0x755);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.NativeReader(Dir, 0, 0, 0x744, 0x755);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
@@ -21,8 +21,8 @@ namespace NyaFsTest
         {
             var Fn = "example.cpio";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.CpioReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.CpioReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
@@ -32,8 +32,8 @@ namespace NyaFsTest
         {
             var Fn = "legacy.bin";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
@@ -43,8 +43,8 @@ namespace NyaFsTest
         {
             var Fn = "legacy.bin";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
@@ -54,13 +54,13 @@ namespace NyaFsTest
             var Fn = "legacy.bin";
             var Dst = "extracted\\";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
 
-            var Exporter = new NyaFs.ImageFormat.Fs.Writer.NativeWriter(Dst);
+            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.NativeWriter(Dst);
             Exporter.WriteFs(Fs);
         }
         public static void TestImportRamFsCpioExportCpio()
@@ -68,13 +68,13 @@ namespace NyaFsTest
             var Fn = "initramfs.bin";
             var Dst = "extracted.cpio";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
 
-            var Exporter = new NyaFs.ImageFormat.Fs.Writer.CpioWriter(Dst);
+            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.CpioWriter(Dst);
             Exporter.WriteFs(Fs);
         }
         public static void TestImportRamFsCpioExportGzCpio()
@@ -82,13 +82,13 @@ namespace NyaFsTest
             var Fn = "legacy.bin";
             var Dst = "extracted.gz";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
 
-            var Exporter = new NyaFs.ImageFormat.Fs.Writer.GzCpioWriter(Dst);
+            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.GzCpioWriter(Dst);
             Exporter.WriteFs(Fs);
         }
 
@@ -97,22 +97,22 @@ namespace NyaFsTest
             var Fn = "legacy.bin";
             var Dst = "legacy.bin.saved";
 
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.LegacyFsReader(Fn);
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.LegacyFsReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
 
-            var Exporter = new NyaFs.ImageFormat.Fs.Writer.LegacyFsWriter(Dst);
+            var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.LegacyFsWriter(Dst);
             Exporter.WriteFs(Fs);
         }
 
         public static void TestImportFit()
         {
             var Fn = "test.fit";
-            var Fs = new NyaFs.ImageFormat.Fs.Filesystem();
+            var Fs = new NyaFs.ImageFormat.Elements.Fs.Filesystem();
 
-            var Importer = new NyaFs.ImageFormat.Fs.Reader.FitReader(Fn);
+            var Importer = new NyaFs.ImageFormat.Elements.Fs.Reader.FitReader(Fn);
             Importer.ReadToFs(Fs);
 
             Fs.Dump();
