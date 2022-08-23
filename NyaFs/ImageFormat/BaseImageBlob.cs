@@ -7,7 +7,7 @@ using System.Text;
 
 namespace NyaFs.ImageFormat
 {
-    class BaseImageFormat
+    public class BaseImageBlob
     {
         public virtual bool IsProvidedDTB => Dtb != null;
         public virtual bool IsProvidedKernel => Kernel != null;
@@ -17,15 +17,12 @@ namespace NyaFs.ImageFormat
         protected Filesystem  Fs = null;
         protected LinuxKernel Kernel = null;
 
-        public virtual DeviceTree GetDTB(int Index = 0) => Dtb;
+        public virtual void SetDevTree(int Index, DeviceTree Dtb) => this.Dtb = Dtb;
+        public virtual void SetKernel(int Index, LinuxKernel Kernel) => this.Kernel = Kernel;
+        public virtual void SetFilesystem(int Index, Filesystem Fs) => this.Fs = Fs;
 
+        public virtual DeviceTree GetDevTree(int Index = 0) => Dtb;
         public virtual Filesystem GetFilesystem(int Index = 0) => Fs;
-
         public virtual LinuxKernel GetKernel(int Index = 0) => Kernel;
-
-        public virtual void Save(string Filename)
-        { 
-            
-        }
     }
 }

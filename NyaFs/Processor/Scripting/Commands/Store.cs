@@ -26,12 +26,12 @@ namespace NyaFs.Processor.Scripting.Commands
                     new Params.EnumScriptArgsParam("format", new string[] { "dtb"/*, "fit"*/ }),
                 }));
 
-            /*
+            
             AddConfig(new ScriptArgsConfig(1, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
                     new Params.EnumScriptArgsParam("type", new string[] { "all" }),
                     new Params.EnumScriptArgsParam("format", new string[] { "fit" }),
-                }));*/
+                }));
         }
 
         public override ScriptStep Get(ScriptArgs Args)
@@ -60,10 +60,61 @@ namespace NyaFs.Processor.Scripting.Commands
                 {
                     case "ramfs": return StoreFs(Processor);
                     case "devtree": return StoreDtb(Processor);
-                    case "kernel":
-                        return new ScriptStepResult(ScriptStepStatus.Error, $"Kernel loading is not supported now!");
+                    case "kernel": return StoreKernel(Processor);
+                    case "all": return StoreAll(Processor);
                     default:
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown image type!");
+                }
+            }
+
+            private ScriptStepResult StoreAll(ImageProcessor Processor)
+            {
+                switch (Format)
+                {
+                    case "fit":
+                        {
+                            var Kernel = Processor.GetKernel();
+                            if ((Kernel == null) || !Kernel.Loaded)
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"Kernel is not loaded!");
+
+                            var Dtb = Processor.GetDevTree();
+                            if ((Dtb == null) || !Dtb.Loaded)
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"Device tree is not loaded!");
+
+                            var Fs = Processor.GetFs();
+                            if ((Fs == null) || (Fs.Loaded == false))
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"Filesystem is not loaded!");
+
+                            var Writer = new ImageFormat.Composite.FitWriter(Path);
+                            if(Writer.Write(Processor.GetBlob()))
+                                return new ScriptStepResult(ScriptStepStatus.Ok, $"Images are stored to file {Path} as FIT Image!");
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Ok, $"Cannot compile FIT Image! No enough information...");
+                        }
+                    default:
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown multiimage format!");
+
+                }
+            }
+
+            private ScriptStepResult StoreKernel(ImageProcessor Processor)
+            {
+                switch (Format)
+                {
+                    case "gz":
+                        {
+                            var Kernel = Processor.GetKernel();
+                            if ((Kernel != null) && Kernel.Loaded)
+                            {
+                                var Exporter = new NyaFs.ImageFormat.Elements.Kernel.Writer.GzWriter(Path);
+                                Exporter.WriteKernel(Kernel);
+                                return new ScriptStepResult(ScriptStepStatus.Ok, $"Kernel is stored to file {Path} as gzipped stream!");
+                            }
+                            else
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"Kernel is not loaded!");
+                        }
+                    default:
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown devtree format!");
                 }
             }
 
@@ -96,7 +147,6 @@ namespace NyaFs.Processor.Scripting.Commands
                 var Fs = Processor.GetFs();
                 if((Fs == null) || (Fs.Loaded == false))
                     return new ScriptStepResult(ScriptStepStatus.Error, $"Filesystem is not loaded!");
-
 
                 switch (Format)
                 {

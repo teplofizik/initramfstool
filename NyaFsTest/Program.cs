@@ -38,7 +38,8 @@ namespace NyaFsTest
                 "dir . rwxr-xr-x 0 0",
                 "rm tmp",
                 "file etc/test.txt test.txt rwxr--r-- 0 0",
-                "store initramfs.bin.SD.modified ramfs legacy"
+                // "store initramfs.bin.SD.modified ramfs legacy"
+                "store builded.fit all fit"
             }).Script;
 
             if (!Script.HasErrors)

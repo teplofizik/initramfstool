@@ -23,6 +23,7 @@ namespace NyaFs.ImageFormat.Elements.Kernel.Reader
             byte[] Raw = Compressors.Gzip.Decompress(Data);
 
             Dst.Image = Raw;
+            Dst.Info.Type = Types.ImageType.IH_TYPE_KERNEL;
             Helper.LogHelper.KernelInfo(Dst);
         }
     }

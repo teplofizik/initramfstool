@@ -11,7 +11,7 @@ namespace NyaFs.ImageFormat.Elements.Fs.Writer
 
         }
 
-        public virtual bool HasRawStreamData => false;
+        public virtual bool HasRawStreamData => RawStream != null;
 
         public virtual byte[] RawStream => null;
 

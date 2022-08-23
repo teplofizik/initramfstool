@@ -9,39 +9,21 @@ namespace NyaFs.Processor
 {
     public class ImageProcessor
     {
-        Filesystem Fs;
-        LinuxKernel Kernel;
-        DeviceTree Dtb;
+        ImageFormat.BaseImageBlob Blob = new ImageFormat.BaseImageBlob();
 
-        public void SetFs(Filesystem Fs)
-        {
-            this.Fs = Fs;
-        }
+        public void SetFs(Filesystem Fs) => Blob.SetFilesystem(0, Fs);
 
-        public void SetKernel(LinuxKernel Kernel)
-        {
-            this.Kernel = Kernel;
-        }
+        public void SetKernel(LinuxKernel Kernel) => Blob.SetKernel(0, Kernel);
 
-        public void SetDeviceTree(DeviceTree Dtb)
-        {
-            this.Dtb = Dtb;
-        }
+        public void SetDeviceTree(DeviceTree Dtb) => Blob.SetDevTree(0, Dtb);
 
-        public LinuxKernel GetKernel()
-        {
-            return Kernel;
-        }
+        public LinuxKernel GetKernel() => Blob.GetKernel(0);
 
-        public Filesystem GetFs()
-        {
-            return Fs;
-        }
+        public Filesystem GetFs() => Blob.GetFilesystem(0);
 
-        public DeviceTree GetDevTree()
-        {
-            return Dtb;
-        }
+        public DeviceTree GetDevTree() => Blob.GetDevTree(0);
+
+        public ImageFormat.BaseImageBlob GetBlob() => Blob;
 
         public void Process(Scripting.Script Script)
         {

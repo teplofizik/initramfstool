@@ -22,6 +22,16 @@ namespace NyaFs.FlattenedDeviceTree.Types
         /// </summary>
         public List<Node> Nodes = new List<Node>();
 
+        public Node()
+        {
+            Name = "";
+        }
+
+        public Node(string Name)
+        {
+            this.Name = Name;
+        }
+
         public override string ToString()
         {
             return $"NODE {Name} P:{Properties.Count} N:{Nodes.Count}";
@@ -56,6 +66,24 @@ namespace NyaFs.FlattenedDeviceTree.Types
                 return UTF8Encoding.UTF8.GetString(Val.ReadArray(0, Val.Length - 1));
             else
                 return null;
+        }
+
+        public void AddUInt32Value(string Name, uint Value)
+        {
+            byte[] Raw = new byte[4];
+            Raw.WriteUInt32BE(0, Value);
+
+            Properties.Add(new Property(Name, Raw));
+        }
+
+        public void AddRawValue(string Name, byte[] Value)
+        {
+            Properties.Add(new Property(Name, Value));
+        }
+
+        public void AddStringValue(string Name, string Value)
+        {
+            Properties.Add(new Property(Name, UTF8Encoding.UTF8.GetBytes(Value + "\0")));
         }
     }
 }

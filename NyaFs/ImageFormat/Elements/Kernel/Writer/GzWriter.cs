@@ -2,29 +2,26 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NyaFs.ImageFormat.Elements.Fs.Writer
+namespace NyaFs.ImageFormat.Elements.Kernel.Writer
 {
-    public class GzCpioWriter : Writer
+    public class GzWriter : Writer
     {
         string Filename;
         byte[] PackedData = null;
 
-        public GzCpioWriter()
+        public GzWriter()
         {
 
         }
 
-        public GzCpioWriter(string Filename)
+        public GzWriter(string Filename)
         {
             this.Filename = Filename;
         }
 
-        public override void WriteFs(Filesystem Fs)
+        public override void WriteKernel(LinuxKernel Kernel)
         {
-            var CpWriter = new CpioWriter();
-            CpWriter.WriteFs(Fs);
-
-            var Data = Compressors.Gzip.CompressWithHeader(CpWriter.RawStream);
+            var Data = Compressors.Gzip.CompressWithHeader(Kernel.Image);
 
             if (Filename != null)
             {
@@ -34,8 +31,5 @@ namespace NyaFs.ImageFormat.Elements.Fs.Writer
             else
                 PackedData = Data;
         }
-
-
-        public override byte[] RawStream => PackedData;
     }
 }

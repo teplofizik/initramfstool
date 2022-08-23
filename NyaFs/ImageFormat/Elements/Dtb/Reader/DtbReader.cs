@@ -21,6 +21,9 @@ namespace NyaFs.ImageFormat.Elements.Dtb.Reader
         {
             var Dtb = new FlattenedDeviceTree.Reader.FDTReader(Path).Read();
             Dst.DevTree = Dtb;
+            Dst.Info.Type = Types.ImageType.IH_TYPE_FLATDT;
+
+            Helper.LogHelper.DevtreeInfo(Dst);
         }
     }
 }
