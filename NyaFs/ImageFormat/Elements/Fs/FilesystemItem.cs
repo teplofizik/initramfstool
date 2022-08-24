@@ -19,7 +19,8 @@ namespace NyaFs.ImageFormat.Elements.Fs
 
         public FilesystemItem(Types.FilesystemItemType Type, string Filename, uint User, uint Group, uint Mode)
         {
-            this.ItemType = Type;
+            ItemType = Type;
+            Modified = DateTime.Now;
 
             this.User = User;
             this.Group = Group;

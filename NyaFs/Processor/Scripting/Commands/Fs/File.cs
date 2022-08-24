@@ -35,7 +35,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
 
         public class FileScriptStep : ScriptStep
         {
-            FileMode AddMode;
+            UpdateMode AddMode;
 
             string Path = null;
             uint User = uint.MaxValue;
@@ -45,7 +45,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
 
             public FileScriptStep(string Path, string Filename) : base("file")
             {
-                AddMode = FileMode.Update;
+                AddMode = UpdateMode.Update;
 
                 this.Path = Path;
                 this.Filename = Filename;
@@ -53,7 +53,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
 
             public FileScriptStep(string Path, string Filename, uint Mode, uint User, uint Group) : base("file")
             {
-                AddMode = FileMode.AddOrUpdate;
+                AddMode = UpdateMode.AddOrUpdate;
 
                 this.Path  = Path;
                 this.User  = User;
@@ -80,7 +80,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                     {
                         var File = Item as ImageFormat.Elements.Fs.Items.File;
 
-                        if (AddMode == FileMode.AddOrUpdate)
+                        if (AddMode == UpdateMode.AddOrUpdate)
                         {
                             File.Mode = Mode;
                             File.User = User;
@@ -100,7 +100,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                     var Parent = Fs.GetParentDirectory(Path);
                     if (Parent != null)
                     {
-                        if (AddMode == FileMode.AddOrUpdate)
+                        if (AddMode == UpdateMode.AddOrUpdate)
                         {
                             var Content = System.IO.File.ReadAllBytes(Filename);
                             var File = new ImageFormat.Elements.Fs.Items.File(Path, User, Group, Mode, Content);
@@ -116,7 +116,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                 }
             }
 
-            enum FileMode
+            enum UpdateMode
             {
                 Update,
                 AddOrUpdate
