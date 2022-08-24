@@ -33,14 +33,14 @@ namespace NyaFsTest
                // "load test.fit ramfs fit",
                // "load test.fit devtree fit",
               //  "load test.fit kernel fit",
-                "load test.fit kernel fit",
+                "load test.fit",
                 "set ramfs name TestImageARM64",
                 "set ramfs os linux",
                 "set ramfs arch arm64",
                 "include include/scp.module",
                 "file etc/test.txt test.txt rwxr--r-- 0 0",
                 // "store initramfs.bin.SD.modified ramfs legacy"
-                "store builded.fit all fit"
+                "store builded.fit"
             }).Script;
 
             if (!Script.HasErrors)

@@ -27,10 +27,8 @@ namespace NyaFs.Processor.Scripting.Commands
                 }));
 
             
-            AddConfig(new ScriptArgsConfig(1, new ScriptArgsParam[] {
-                    new Params.FsPathScriptArgsParam(),
-                    new Params.EnumScriptArgsParam("type", new string[] { "all" }),
-                    new Params.EnumScriptArgsParam("format", new string[] { "fit" }),
+            AddConfig(new ScriptArgsConfig(3, new ScriptArgsParam[] {
+                    new Params.FsPathScriptArgsParam()
                 }));
         }
 
@@ -38,7 +36,10 @@ namespace NyaFs.Processor.Scripting.Commands
         {
             var A = Args.RawArgs;
 
-            return new StoreScriptStep(A[0], A[1], A[2]);
+            if(Args.ArgConfig == 3)
+                return new StoreScriptStep(A[0], "all", "fit");
+            else
+                return new StoreScriptStep(A[0], A[1], A[2]);
         }
 
         public class StoreScriptStep : ScriptStep
@@ -77,13 +78,17 @@ namespace NyaFs.Processor.Scripting.Commands
                             if ((Kernel == null) || !Kernel.Loaded)
                                 return new ScriptStepResult(ScriptStepStatus.Error, $"Kernel is not loaded!");
 
+                            var Fs = Processor.GetFs();
+                            if ((Fs == null) || (Fs.Loaded == false))
+                                return new ScriptStepResult(ScriptStepStatus.Error, $"Filesystem is not loaded!");
+
                             var Dtb = Processor.GetDevTree();
                             if ((Dtb == null) || !Dtb.Loaded)
                                 return new ScriptStepResult(ScriptStepStatus.Error, $"Device tree is not loaded!");
 
-                            var Fs = Processor.GetFs();
-                            if ((Fs == null) || (Fs.Loaded == false))
-                                return new ScriptStepResult(ScriptStepStatus.Error, $"Filesystem is not loaded!");
+                            ImageFormat.Helper.LogHelper.KernelInfo(Kernel);
+                            ImageFormat.Helper.LogHelper.RamfsInfo(Fs, "CPIO");
+                            ImageFormat.Helper.LogHelper.DevtreeInfo(Dtb);
 
                             var Writer = new ImageFormat.Composite.FitWriter(Path);
                             if(Writer.Write(Processor.GetBlob()))
@@ -106,6 +111,7 @@ namespace NyaFs.Processor.Scripting.Commands
                             var Kernel = Processor.GetKernel();
                             if ((Kernel != null) && Kernel.Loaded)
                             {
+                                ImageFormat.Helper.LogHelper.KernelInfo(Kernel);
                                 var Exporter = new NyaFs.ImageFormat.Elements.Kernel.Writer.GzWriter(Path);
                                 Exporter.WriteKernel(Kernel);
                                 return new ScriptStepResult(ScriptStepStatus.Ok, $"Kernel is stored to file {Path} as gzipped stream!");
@@ -127,6 +133,8 @@ namespace NyaFs.Processor.Scripting.Commands
                             var Dtb = Processor.GetDevTree();
                             if (Dtb != null)
                             {
+                                ImageFormat.Helper.LogHelper.DevtreeInfo(Dtb);
+
                                 var data = new NyaFs.FlattenedDeviceTree.Writer.FDTWriter(Dtb.DevTree);
                                 System.IO.File.WriteAllBytes(Path, data.GetBinary());
 
@@ -152,18 +160,21 @@ namespace NyaFs.Processor.Scripting.Commands
                 {
                     case "cpio":
                         {
+                            ImageFormat.Helper.LogHelper.RamfsInfo(Fs, "CPIO");
                             var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.CpioWriter(Path);
                             Exporter.WriteFs(Fs);
                             return new ScriptStepResult(ScriptStepStatus.Ok, $"Filesystem is stored to file {Path} as cpio stream!");
                         }
                     case "gz":
                         {
+                            ImageFormat.Helper.LogHelper.RamfsInfo(Fs, "CPIO");
                             var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.GzCpioWriter(Path);
                             Exporter.WriteFs(Fs);
                             return new ScriptStepResult(ScriptStepStatus.Ok, $"Filesystem is stored to file {Path} as gzipped cpio stream!");
                         }
                     case "legacy":
                         {
+                            ImageFormat.Helper.LogHelper.RamfsInfo(Fs, "CPIO");
                             var Exporter = new NyaFs.ImageFormat.Elements.Fs.Writer.LegacyFsWriter(Path);
                             if (Exporter.CheckFilesystem(Fs))
                             {

@@ -6,6 +6,7 @@ namespace NyaFs.Processor.Scripting
 {
     public class ScriptStep
     {
+        public string ScriptFilename;
         public string ScriptName;
         public int ScriptLine;
 
@@ -16,11 +17,14 @@ namespace NyaFs.Processor.Scripting
             this.Name = Name;
         }
 
-        public void SetScriptInfo(string Name, int Line)
+        public void SetScriptInfo(string Filename, string Name, int Line)
         {
+            ScriptFilename = Filename;
             ScriptName = Name;
             ScriptLine = Line;
         }
+
+        public string ScriptPath => System.IO.Path.GetDirectoryName(ScriptFilename);
 
         public virtual ScriptStepResult Exec(ImageProcessor Processor)
         {

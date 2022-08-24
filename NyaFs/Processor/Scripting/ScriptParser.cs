@@ -10,16 +10,18 @@ namespace NyaFs.Processor.Scripting
         public Script Script = new Script();
         private ScriptBase Base;
 
-        public ScriptParser(ScriptBase Base, string Filename) : this(Base, Filename, System.IO.File.ReadAllLines(Filename))
+        public ScriptParser(ScriptBase Base, string Filename)
         {
+            this.Base = Base;
 
+            Parse(Filename, System.IO.Path.GetFileName(Filename), System.IO.File.ReadAllLines(Filename));
         }
 
         public ScriptParser(ScriptBase Base, string Name, string[] Lines)
         {
             this.Base = Base;
 
-            Parse(Name, Lines);
+            Parse("", Name, Lines);
         }
 
         /// <summary>
@@ -69,7 +71,7 @@ namespace NyaFs.Processor.Scripting
         /// </summary>
         /// <param name="Filename"></param>
         /// <param name="Lines"></param>
-        private void Parse(string Filename, string[] Lines)
+        private void Parse(string Filename, string Name, string[] Lines)
         {
             var Sep = new char[] { ' ' };
             for(int i = 0; i < Lines.Length; i++)
@@ -86,10 +88,10 @@ namespace NyaFs.Processor.Scripting
                 if (Args == null)
                 {
                     Script.HasErrors = true;
-                    Log.Error(0, $"Error at {Filename}:{i + 1}. Invalid quotes.");
+                    Log.Error(0, $"Error at {Name}:{i + 1}. Invalid quotes.");
                 }
                 else
-                    ParseLine(Filename, i + 1, Command, Args);
+                    ParseLine(Filename, Name, i + 1, Command, Args);
             }
         }
 
@@ -111,7 +113,7 @@ namespace NyaFs.Processor.Scripting
             return null;
         }
 
-        private void ParseLine(string Filename, int Line, string Cmd, string[] Args)
+        private void ParseLine(string Filename, string Name, int Line, string Cmd, string[] Args)
         {
             switch (Cmd)
             {
@@ -120,7 +122,7 @@ namespace NyaFs.Processor.Scripting
                         if(Args.Length != 1)
                         {
                             Script.HasErrors = true;
-                            Log.Error(0, $"Error at {Filename}:{Line}. Invalid arguments for command {Cmd}.");
+                            Log.Error(0, $"Error at {Name}:{Line}. Invalid arguments for command {Cmd}.");
                             return;
                         }
 
@@ -128,14 +130,12 @@ namespace NyaFs.Processor.Scripting
                         if (Path == null)
                         {
                             Script.HasErrors = true;
-                            Log.Error(0, $"Error at {Filename}:{Line}.  not found.");
+                            Log.Error(0, $"Error at {Name}:{Line}.  not found.");
                             return;
                         }
                         else
                         {
-                            Log.Ok(0, $"Include {Path}");
-
-                            Parse(Path, System.IO.File.ReadAllLines(Path));
+                            Parse(Path, System.IO.Path.GetFileName(Path), System.IO.File.ReadAllLines(Path));
                         }
                     }
                     break;
@@ -146,7 +146,7 @@ namespace NyaFs.Processor.Scripting
                         if (Gen == null)
                         {
                             Script.HasErrors = true;
-                            Log.Error(0, $"Error at {Filename}:{Line}. Command {Cmd} is not supported.");
+                            Log.Error(0, $"Error at {Name}:{Line}. Command {Cmd} is not supported.");
                         }
                         else
                         {
@@ -155,14 +155,14 @@ namespace NyaFs.Processor.Scripting
                             if (SArgs != null)
                             {
                                 var Step = Gen.Get(SArgs);
-                                Step.SetScriptInfo(Filename, Line);
+                                Step.SetScriptInfo(Filename, Name, Line);
 
                                 Script.Steps.Add(Step);
                             }
                             else
                             {
                                 Script.HasErrors = true;
-                                Log.Error(0, $"Error at {Filename}:{Line}. Invalid arguments for command '{Cmd}'.");
+                                Log.Error(0, $"Error at {Name}:{Line}. Invalid arguments for command '{Cmd}'.");
                             }
                         }
                         break;

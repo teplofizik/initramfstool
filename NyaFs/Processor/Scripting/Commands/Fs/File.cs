@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NyaFs.Processor.Scripting.Helper;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -69,8 +70,9 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                 if (Fs == null)
                     return new ScriptStepResult(ScriptStepStatus.Error, "Filesystem is not loaded");
 
+                var DetectedFilename = this.DetectFilePath(Filename);
                 // Проверим наличие локального файла, содержимое которого надо загрузить в ФС
-                if (!System.IO.File.Exists(Filename))
+                if (DetectedFilename == null)
                     return new ScriptStepResult(ScriptStepStatus.Error, $"{Filename} not found!");
 
                 if (Fs.Exists(Path))
@@ -88,7 +90,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                         }
 
                         File.Modified = DateTime.Now;
-                        File.Content = System.IO.File.ReadAllBytes(Filename);
+                        File.Content = System.IO.File.ReadAllBytes(DetectedFilename);
 
                         return new ScriptStepResult(ScriptStepStatus.Ok, $"{Path} updated!");
                     }
@@ -102,7 +104,7 @@ namespace NyaFs.Processor.Scripting.Commands.Fs
                     {
                         if (AddMode == UpdateMode.AddOrUpdate)
                         {
-                            var Content = System.IO.File.ReadAllBytes(Filename);
+                            var Content = System.IO.File.ReadAllBytes(DetectedFilename);
                             var File = new ImageFormat.Elements.Fs.Items.File(Path, User, Group, Mode, Content);
 
                             Parent.Items.Add(File);

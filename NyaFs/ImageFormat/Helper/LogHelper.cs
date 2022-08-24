@@ -8,6 +8,7 @@ namespace NyaFs.ImageFormat.Helper
     {
         public static void KernelInfo(Elements.Kernel.LinuxKernel Kernel)
         {
+            Log.Ok(1, "Kernel:");
             Log.Write(1, $"  Operating System: {FitHelper.GetOperatingSystem(Kernel.Info.OperatingSystem)}");
             Log.Write(1, $"      Architecture: {FitHelper.GetCPUArchitecture(Kernel.Info.Architecture)}");
             //Log.Write(1, $"       Compression: {FitHelper.GetCompression(Kernel.Info.Compression)}");
@@ -18,6 +19,7 @@ namespace NyaFs.ImageFormat.Helper
 
         public static void RamfsInfo(Elements.Fs.Filesystem Fs, string FsType)
         {
+            Log.Ok(1, "Filesystem:");
             Log.Write(1, $"  Operating System: {FitHelper.GetOperatingSystem(Fs.Info.OperatingSystem)}");
             Log.Write(1, $"      Architecture: {FitHelper.GetCPUArchitecture(Fs.Info.Architecture)}");
             //Log.Write(1, $"       Compression: {FitHelper.GetCompression(Kernel.Info.Compression)}");
@@ -27,6 +29,7 @@ namespace NyaFs.ImageFormat.Helper
         }
         public static void DevtreeInfo(Elements.Dtb.DeviceTree Dtb)
         {
+            Log.Ok(1, "Device tree:");
             Log.Write(1, $"      Architecture: {FitHelper.GetCPUArchitecture(Dtb.Info.Architecture)}");
             //Log.Write(1, $"       Compression: {FitHelper.GetCompression(Kernel.Info.Compression)}");
             Log.Write(1, $"              Type: {FitHelper.GetType(Dtb.Info.Type)}");

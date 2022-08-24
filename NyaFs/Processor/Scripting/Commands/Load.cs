@@ -27,19 +27,20 @@ namespace NyaFs.Processor.Scripting.Commands
                     new Params.EnumScriptArgsParam("format", new string[] { "dtb", "fit" }),
                 }));
 
-            /*
+            
             AddConfig(new ScriptArgsConfig(3, new ScriptArgsParam[] {
                     new Params.FsPathScriptArgsParam(),
-                    new Params.EnumScriptArgsParam("type", new string[] { "all" }),
-                    new Params.EnumScriptArgsParam("format", new string[] { "fit" }),
-                }));*/
+                }));
         }
 
         public override ScriptStep Get(ScriptArgs Args)
         {
             var A = Args.RawArgs;
 
-            return new LoadScriptStep(A[0], A[1], A[2]);
+            if (Args.ArgConfig == 3)
+                return new LoadScriptStep(A[0], "all", "fit");
+            else
+                return new LoadScriptStep(A[0], A[1], A[2]);
         }
 
         public class LoadScriptStep : ScriptStep
@@ -66,8 +67,34 @@ namespace NyaFs.Processor.Scripting.Commands
                     case "ramfs":   return ReadFs(Processor);
                     case "devtree": return ReadDtb(Processor);
                     case "kernel":  return ReadKernel(Processor);
+                    case "all": return ReadAll(Processor);
                     default:
                         return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown image type!");
+                }
+            }
+
+            private ScriptStepResult ReadAll(ImageProcessor Processor)
+            {
+                ScriptStepResult Res;
+                switch (Format)
+                {
+                    case "fit":
+                        Res = ReadKernel(Processor);
+                        if (Res.Status != ScriptStepStatus.Ok)
+                            return Res;
+
+                        Res = ReadFs(Processor);
+                        if (Res.Status != ScriptStepStatus.Ok)
+                            return Res;
+
+                        Res = ReadDtb(Processor);
+                        if (Res.Status != ScriptStepStatus.Ok)
+                            return Res;
+
+                        return new ScriptStepResult(ScriptStepStatus.Ok, $"Kernel, ramfs and devtree are loaded FIT image!");
+                    default:
+                        return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown image format!");
+
                 }
             }
 
