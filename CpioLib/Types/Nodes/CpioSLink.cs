@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CpioLib.Types.Nodes
 {
-    class CpioSLink : CpioNode
+    public class CpioSLink : CpioNode
     {
         public CpioSLink(string Path, string ToPath) : base(Path,
                                                             UTF8Encoding.UTF8.GetBytes(ToPath),

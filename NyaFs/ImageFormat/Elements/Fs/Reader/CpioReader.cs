@@ -52,7 +52,6 @@ namespace NyaFs.ImageFormat.Elements.Fs.Reader
                                 var File = new Items.File(I.Path, I.UserId, I.GroupId, I.HexMode, I.Content);
                                 ApplyCpioParams(File, I);
                                 Dir.Items.Add(File);
-                                //Console.WriteLine($"Added file {I.Path} size {I.FileSize}");
                                 break;
                             }
                         case CpioLib.Types.CpioModeFileType.C_ISLNK: // Ссылка

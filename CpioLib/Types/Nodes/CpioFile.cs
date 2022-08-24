@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CpioLib.Types.Nodes
 {
-    class CpioFile : CpioNode
+    public class CpioFile : CpioNode
     {
         public CpioFile(string Path, DateTime Modified, byte[] Data) : base(Path,
                                                                            Data,

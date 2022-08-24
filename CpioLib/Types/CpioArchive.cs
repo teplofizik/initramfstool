@@ -121,44 +121,60 @@ namespace CpioLib.Types
             return ProcessFiles(Filename, (F, List) => { F.GroupId = Gid; return true; });
         }
 
-        public void AddDir(string Filename, uint Links = 1u)
+        public CpioDir AddDir(string Filename, uint Links = 1u)
         {
-            Files.Add(new CpioDir(Filename, Links));
+            var D = new CpioDir(Filename, Links);
+            Files.Add(D);
+            return D;
         }
 
-        public void AddDir(string Filename, string LocalPath)
+        public CpioDir AddDir(string Filename, string LocalPath)
         {
-            Files.Add(new CpioDir(Filename, LocalPath));
+            var D = new CpioDir(Filename, LocalPath);
+            Files.Add(D);
+            return D;
         }
 
-        public void AddFile(string Filename, string LocalPath)
+        public CpioFile AddFile(string Filename, string LocalPath)
         {
-            Files.Add(new CpioFile(Filename, LocalPath));
+            var F = new CpioFile(Filename, LocalPath);
+            Files.Add(F);
+            return F;
         }
 
-        public void AddFile(string Path, DateTime Modified, byte[] Data)
+        public CpioFile AddFile(string Path, DateTime Modified, byte[] Data)
         {
-            Files.Add(new CpioFile(Path, Modified, Data));
+            var F = new CpioFile(Path, Modified, Data);
+            Files.Add(F);
+            return F;
         }
 
-        public void AddSLink(string Filename, string ToPath)
+        public CpioSLink AddSLink(string Filename, string ToPath)
         {
-            Files.Add(new CpioSLink(Filename, ToPath));
+            var L = new CpioSLink(Filename, ToPath);
+            Files.Add(L);
+            return L;
         }
 
-        public void AddNod(string Filename, uint RMajor, uint RMinor)
+        public CpioNod AddNod(string Filename, uint RMajor, uint RMinor)
         {
-            Files.Add(new CpioNod(Filename, RMajor, RMinor));
+            var N = new CpioNod(Filename, RMajor, RMinor);
+            Files.Add(N);
+            return N;
         }
 
-        public void AddBlock(string Filename, uint RMajor, uint RMinor)
+        public CpioBlock AddBlock(string Filename, uint RMajor, uint RMinor)
         {
-            Files.Add(new CpioBlock(Filename, RMajor, RMinor));
+            var B = new CpioBlock(Filename, RMajor, RMinor);
+            Files.Add(B);
+            return B;
         }
 
-        public void AddFifo(string Filename, uint RMajor, uint RMinor)
+        public CpioFifo AddFifo(string Filename, uint RMajor, uint RMinor)
         {
-            Files.Add(new CpioFifo(Filename, RMajor, RMinor));
+            var F = new CpioFifo(Filename, RMajor, RMinor);
+            Files.Add(F);
+            return F;
         }
 
         public void Clear()

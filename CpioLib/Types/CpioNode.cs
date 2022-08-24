@@ -109,11 +109,12 @@ namespace CpioLib.Types
         {
             get
             {
-                var M = Mode & 0x1FFU;
+                var M = Mode & 0xFFFU;
                 uint Res = 0;
                 Res |= (M & 0x7);
                 Res |= ((M >> 3) & 0x7) << 4;
                 Res |= ((M >> 6) & 0x7) << 8;
+                Res |= ((M >> 9) & 0x7) << 12;
 
                 return Res;
             }
@@ -123,6 +124,7 @@ namespace CpioLib.Types
                 M |= (value & 0x7);
                 M |= ((value >> 4) & 0x7) << 3;
                 M |= ((value >> 8) & 0x7) << 6;
+                M |= ((value >> 12) & 0x7) << 9;
 
                 Mode = M;
             }
@@ -132,14 +134,15 @@ namespace CpioLib.Types
         {
             get
             {
+                // S: sticky 1 << 12, SGID: 13 SUID 14
                 var Res = "";
                 for (int i = 0; i < 3; i++)
                 {
-                    UInt32 Part = (HexMode >> (2 - i) * 4) & 0x7;
+                    UInt32 Part = (HexMode >> (2 - i) * 4) & 0xF;
 
                     Res += ((Part & 0x04) != 0) ? "r" : "-";
                     Res += ((Part & 0x02) != 0) ? "w" : "-";
-                    Res += ((Part & 0x01) != 0) ? "x" : "-";
+                    Res += ((Part & 0x01) != 0) ? ((((HexMode >> 12 >> (2 - i)) & 0x1) != 1) ? "x" : "s") : "-";
                 }
                 return Res;
             }
@@ -153,14 +156,20 @@ namespace CpioLib.Types
                         {
                             int Offset = i * 3;
 
-                            for (int c = 0; c < 3; c++)
-                            {
-                                var C = value[Offset + c];
+                            var R = value[Offset + 0];
+                            var W = value[Offset + 1];
+                            var X = value[Offset + 2];
 
-                                if (C == 'r') ModeX |= 4U << ((2 - i) * 4);
-                                if (C == 'w') ModeX |= 2U << ((2 - i) * 4);
-                                if (C == 'x') ModeX |= 1U << ((2 - i) * 4);
+                            if (R == 'r') ModeX |= 4U << ((2 - i) * 4);
+                            if (W == 'w') ModeX |= 2U << ((2 - i) * 4);
+                            if (X == 'x') 
+                                ModeX |= 1U << ((2 - i) * 4);
+                            else if (X == 's')
+                            {
+                                ModeX |= 1U << ((2 - i) * 4);
+                                ModeX |= 1U << 12 << (2 - i);
                             }
+
                         }
                         HexMode = ModeX;
                     }
@@ -270,7 +279,7 @@ namespace CpioLib.Types
 
         public override string ToString()
         {
-            return $"CPIO: {Path} (sz: {FileSize}, u: {UserId}, g: {GroupId}, m: {Mode})";
+            return $"CPIO: {Path} (sz: {FileSize}, u: {UserId}, g: {GroupId}, m: {StrMode})";
         }
 
         protected UInt32 GetUnixTimestamp(DateTime T) => Convert.ToUInt32(((DateTimeOffset)T).ToUnixTimeSeconds());

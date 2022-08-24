@@ -6,7 +6,11 @@ namespace NyaFsTest
     {
         static void Main(string[] args)
         {
-            TestScript();
+            if (args.Length == 1)
+                TestScriptFile(args[0]);
+            else
+                Console.WriteLine("Usage: NyaFsTest <scriptfilename>");
+//            TestScript();
         }
 
         static NyaFs.Processor.Scripting.ScriptBase GetBase()
@@ -23,6 +27,18 @@ namespace NyaFsTest
             return B;
         }
 
+        static void TestScriptFile(string FN)
+        {
+            var Processor = new NyaFs.Processor.ImageProcessor();
+            var Base = GetBase();
+            var Script = new NyaFs.Processor.Scripting.ScriptParser(Base, FN).Script;
+
+            if (!Script.HasErrors)
+                Processor.Process(Script);
+            else
+                Console.WriteLine("Errors in script.");
+        }
+
         static void TestScript()
         {
             var Processor = new NyaFs.Processor.ImageProcessor();
@@ -34,13 +50,14 @@ namespace NyaFsTest
                // "load test.fit devtree fit",
               //  "load test.fit kernel fit",
                 "load test.fit",
-                "set ramfs name TestImageARM64",
-                "set ramfs os linux",
-                "set ramfs arch arm64",
+              //  "set ramfs name TestImageARM64",
+              //  "set ramfs os linux",
+              //  "set ramfs arch arm64",
                 "include include/scp.module",
                 "file etc/test.txt test.txt rwxr--r-- 0 0",
                 // "store initramfs.bin.SD.modified ramfs legacy"
-                "store builded.fit"
+                "store builded.fit",
+                "store ramfs.cpio ramfs cpio"
             }).Script;
 
             if (!Script.HasErrors)

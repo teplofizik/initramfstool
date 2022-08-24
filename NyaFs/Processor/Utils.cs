@@ -32,7 +32,7 @@ namespace NyaFs.Processor
 
                     if ((R != 'r') && (R != '-')) return false;
                     if ((W != 'w') && (W != '-')) return false;
-                    if ((X != 'x') && (X != '-')) return false;
+                    if ((X != 'x') && (X != 's') && (X != '-')) return false;
                 }
                 return true;
             }
@@ -47,13 +47,18 @@ namespace NyaFs.Processor
             {
                 int Offset = i * 3;
 
-                for (int c = 0; c < 3; c++)
-                {
-                    var C = Mode[Offset + c];
+                var R = Mode[Offset + 0];
+                var W = Mode[Offset + 1];
+                var X = Mode[Offset + 2];
 
-                    if (C == 'r') ModeX |= 4U << ((2 - i) * 4);
-                    if (C == 'w') ModeX |= 2U << ((2 - i) * 4);
-                    if (C == 'x') ModeX |= 1U << ((2 - i) * 4);
+                if (R == 'r') ModeX |= 4U << ((2 - i) * 4);
+                if (W == 'w') ModeX |= 2U << ((2 - i) * 4);
+                if (X == 'x') 
+                    ModeX |= 1U << ((2 - i) * 4);
+                else if (X == 's')
+                {
+                    ModeX |= 1U << ((2 - i) * 4);
+                    ModeX |= 1U << 12 << (2 - i);
                 }
             }
             return ModeX;
@@ -68,7 +73,7 @@ namespace NyaFs.Processor
 
                 Res += ((Part & 0x04) != 0) ? "r" : "-";
                 Res += ((Part & 0x02) != 0) ? "w" : "-";
-                Res += ((Part & 0x01) != 0) ? "x" : "-";
+                Res += ((Part & 0x01) != 0) ? ((((Mode >> 12 >> (2 - i)) & 0x1) != 1) ? "x" : "s") : "-";
             }
             return Res;
         }

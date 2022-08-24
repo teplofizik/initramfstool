@@ -45,23 +45,41 @@ namespace NyaFs.ImageFormat.Elements.Fs.Writer
                 switch (I.ItemType)
                 {
                     case Types.FilesystemItemType.Dir:
-                        Archive.AddDir(I.Filename, Convert.ToUInt32((I as Items.Dir).Items.Count));
-                        ProcessDirectory(I as Items.Dir);
+                        {
+                            var N = Archive.AddDir(I.Filename, Convert.ToUInt32((I as Items.Dir).Items.Count));
+                            SetParamsToCpioNode(I, N);
+                            ProcessDirectory(I as Items.Dir);
+                        }
                         break;
                     case Types.FilesystemItemType.File:
-                        Archive.AddFile(I.Filename, DateTime.Now, (I as Items.File).Content);
+                        {
+                            var N = Archive.AddFile(I.Filename, DateTime.Now, (I as Items.File).Content);
+                            SetParamsToCpioNode(I, N);
+                        }
                         break;
                     case Types.FilesystemItemType.SymLink:
-                        Archive.AddSLink(I.Filename, (I as Items.SymLink).Target);
+                        {
+                            var N = Archive.AddSLink(I.Filename, (I as Items.SymLink).Target);
+                            SetParamsToCpioNode(I, N);
+                        }
                         break;
                     case Types.FilesystemItemType.Node:
-                        Archive.AddNod(I.Filename, I.RMajor, I.RMinor);
+                        {
+                            var N = Archive.AddNod(I.Filename, I.RMajor, I.RMinor);
+                            SetParamsToCpioNode(I, N);
+                        }
                         break;
                     case Types.FilesystemItemType.Block:
-                        Archive.AddBlock(I.Filename, I.RMajor, I.RMinor);
+                        {
+                            var N = Archive.AddBlock(I.Filename, I.RMajor, I.RMinor);
+                            SetParamsToCpioNode(I, N);
+                        }
                         break;
                     case Types.FilesystemItemType.Fifo:
-                        Archive.AddFifo(I.Filename, I.RMajor, I.RMinor);
+                        {
+                            var N = Archive.AddFifo(I.Filename, I.RMajor, I.RMinor);
+                            SetParamsToCpioNode(I, N);
+                        }
                         break;
                 }
             }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CpioLib.Types.Nodes
 {
-    class CpioBlock : CpioNode
+    public class CpioBlock : CpioNode
     {
         public CpioBlock(string Path, uint Major, uint Minor) : base(Path,
                                                                    new byte[] { },
