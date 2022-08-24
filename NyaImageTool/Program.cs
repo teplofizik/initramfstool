@@ -22,6 +22,8 @@ namespace NyaImageTool
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.File());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.SLink());
             B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Rm());
+            B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Chown());
+            B.Add(new NyaFs.Processor.Scripting.Commands.Fs.Chmod());
 
             return B;
         }

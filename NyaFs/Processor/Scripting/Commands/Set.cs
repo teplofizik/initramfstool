@@ -128,7 +128,6 @@ namespace NyaFs.Processor.Scripting.Commands
                             }
                             else
                                 return new ScriptStepResult(ScriptStepStatus.Error, $"Unknown image type: {Value}!");
-
                         }
                     case "name":
                         Array.ForEach(Info.ToArray(), I => I.Name = Value);
